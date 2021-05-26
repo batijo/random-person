@@ -9,12 +9,29 @@ import (
 	"github.com/joho/godotenv"
 )
 
+const (
+	folder       = "config/"
+	namesFile    = "names.json"
+	surnamesFile = "surnames.json"
+	configEnv    = ".env"
+)
+
 func main() {
-	if err := godotenv.Load("config/.env"); err != nil {
+	if err := godotenv.Load(folder + configEnv); err != nil {
 		log.Fatal("cannot load .env file. error: ", err)
 	}
-	srv := server.New(&database.Database{})
-	log.Println("Server is running...")
-	//log.Fatal(srv.ListenTLS(os.Getenv("RP_IP") + ":" + os.Getenv("RP_PORT"), os.Getenv("RP_CERT_FILE"), os.Getenv("RP_KEY_FILE")))
-	log.Fatal(srv.App.Listen(os.Getenv("RP_IP") + ":" + os.Getenv("RP_PORT")))
+	db, err := database.Connect(database.Config{
+		Host:    os.Getenv("RP_DB_HOST"),
+		Name:    os.Getenv("RP_DB_NAME"),
+		User:    os.Getenv("RP_DB_USER"),
+		Pasword: os.Getenv("RP_DB_PASSWORD"),
+		Port:    os.Getenv("RP_DB_PORT"),
+	})
+	if err != nil {
+		log.Panic(err)
+	}
+	srv := server.New(&db)
+	db.InsertData(folder, namesFile, surnamesFile)
+	log.Println("Server is running on: ", os.Getenv("RP_IP")+":"+os.Getenv("RP_PORT"))
+	log.Fatal(srv.App.Listen(":" + os.Getenv("RP_PORT")))
 }

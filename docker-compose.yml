@@ -1,0 +1,38 @@
+version: '3'
+
+networks: 
+  internal:
+
+services: 
+  app:
+    container_name: ${APP_CONTAINER_NAME}
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    environment: 
+      - RP_DB_HOST=database
+      - RP_DB_NAME=${DB_NAME}
+      - RP_DB_USER=${DB_USER}
+      - RP_DB_PASSWORD=${DB_PASSWORD}
+      - RP_DB_PORT=${DB_PORT}
+      - RP_PORT=${RP_PORT}
+    ports:
+      - ${RP_PORT}:${RP_PORT}
+    networks: 
+      - internal
+    depends_on: 
+      - database
+
+  database:
+    container_name: ${DATABASE_CONTAINER_NAME}
+    image: postgres:alpine
+    restart: unless-stopped
+    environment:
+      - POSTGRES_DB=${DB_NAME}
+      - POSRGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+    ports:
+      - ${DB_PORT}:${DB_PORT}
+    networks:
+      - internal
