@@ -1,12 +1,16 @@
 package models
 
 type Name struct {
-	ID              uint   `json:"id" gorm:"primaryKey"`
-	Name            string `json:"name" gorm:"uniqueIndex"`
+	ID              uint   `json:"-" gorm:"primaryKey"`
 	Gender          uint   `json:"gender" gorm:"type:smallint"`
 	NormativeStatus string `json:"normative_status"`
-	Origin          string `json:"origin"`
-	Note            string `json:"note"`
+	Origin          string `json:"origin,omitempty"`
+	Note            string `json:"note,omitempty"`
+	*NameOnly
+}
+
+type NameOnly struct {
+	Name string `json:"name" gorm:"uniqueIndex"`
 }
 
 func (n *Name) TableName() string {

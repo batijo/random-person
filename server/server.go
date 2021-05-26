@@ -23,14 +23,22 @@ func (srv *Obj) registerRoutes(r fiber.Router) {
 	// Routes...
 	h := handlers.New(srv.db)
 	r.Get("", h.Api)
+	r.Get("/name/:gender?", h.Name)
+	r.Get("/surname/:gender?", h.Surname)
+	r.Get("/person/:gender?", h.Person)
 }
 
 func New(db *database.Database) *Obj {
 	srv := Obj{
 		App: fiber.New(fiber.Config{
 			GETOnly:               true,
-			ServerHeader:          "github.com/batijo/random-person",
+			ServerHeader:          "random-person",
 			DisableStartupMessage: true,
+			ErrorHandler: func(c *fiber.Ctx, err error) error {
+				return c.Status(500).JSON(fiber.Map{
+					"error": err.Error(),
+				})
+			},
 		}),
 		db: db,
 	}
