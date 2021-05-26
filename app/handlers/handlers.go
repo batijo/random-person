@@ -11,7 +11,7 @@ type Handlers struct {
 
 func (h *Handlers) Api(c *fiber.Ctx) error {
 	c.AcceptsLanguages("lt", "en")
-	c.SendString("Hello")
+	c.SendString(h.DB.RandomName(0).Name)
 	return nil
 }
 

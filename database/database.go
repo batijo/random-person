@@ -98,7 +98,18 @@ func (db *Database) InsertData(folder, namesFile, surnamesFile string) {
 	}
 }
 
-// TODO: implement random query
-func Random() {
+// gender must be 0 - male or 1 - female else it will return random name
+func (db *Database) RandomName(gender int) models.Name {
+	var name models.Name
+	if gender > 0 || gender < 2 {
+		db.Limit(1).Order("RANDOM()").Where("gender = ?", gender).Find(&name)
+	}
+	db.Limit(1).Order("RANDOM()").Find(&name)
+	return name
+}
 
+func (db *Database) RandomSurname() models.Surname {
+	var surname models.Surname
+	db.Limit(1).Order("RANDOM()").Find(&surname)
+	return surname
 }
