@@ -2,6 +2,9 @@ version: '3'
 
 networks: 
   internal:
+    external: false
+  web:
+    external: true
 
 services: 
   app:
@@ -21,6 +24,7 @@ services:
       - ${RP_PORT}:${RP_PORT}
     networks: 
       - internal
+      - web
     depends_on: 
       - database
 
@@ -32,7 +36,5 @@ services:
       - POSTGRES_DB=${DB_NAME}
       - POSRGRES_USER=${DB_USER}
       - POSTGRES_PASSWORD=${DB_PASSWORD}
-    ports:
-      - ${DB_PORT}:${DB_PORT}
     networks:
       - internal
