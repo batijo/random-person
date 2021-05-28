@@ -8,9 +8,7 @@ import (
 
 func LoadData(filename string, model interface{}) error {
 	_, err := os.Stat(filename)
-	if os.IsNotExist(err) {
-		return nil
-	} else if err != nil {
+	if err != nil {
 		return err
 	}
 	data, err := ioutil.ReadFile(filename)

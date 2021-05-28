@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"os"
 	"time"
 
 	"github.com/batijo/random-person/app/models"
@@ -63,38 +64,41 @@ func Connect(conf Config) (Database, error) {
 
 func (db *Database) InsertData(folder, namesFile, surnamesFile string) {
 	names := []models.Name{}
-	err := utils.LoadData(folder+namesFile, &names)
-	if err != nil {
-		log.Println(err)
-	}
-	names = models.RemoveDuplicateNames(names)
 	var perr *pgconn.PgError
-	if resp := db.Create(&names); resp.Error != nil {
-		// Checks if error is duplicate key violation
-		if errors.As(resp.Error, &perr) && perr.Code == "23505" {
-			log.Printf(
-				"%[1]s contains records that are already in the database. You may want to remove %[1]s\n",
-				namesFile,
-			)
-		} else {
-			log.Println(resp.Error)
+	err := utils.LoadData(folder+namesFile, &names)
+	if !errors.Is(err, os.ErrNotExist) {
+		names = models.RemoveDuplicateNames(names)
+		if resp := db.Create(&names); resp.Error != nil {
+			// Checks if error is duplicate key violation
+			if errors.As(resp.Error, &perr) && perr.Code == "23505" {
+				log.Printf(
+					"%[1]s contains records that are already in the database. You may want to remove %[1]s\n",
+					namesFile,
+				)
+			} else {
+				log.Println(resp.Error)
+			}
 		}
+	} else if err != nil {
+		log.Println(err)
 	}
 	surnames := []models.Surname{}
 	err = utils.LoadData(folder+surnamesFile, &surnames)
-	if err != nil {
-		log.Println(err)
-	}
-	surnames = models.RemoveDuplicateSurnames(surnames)
-	if resp := db.Create(&surnames); resp.Error != nil {
-		if errors.As(resp.Error, &perr) && perr.Code == "23505" {
-			log.Printf(
-				"%[1]s contains records that are already in the database. You may want to remove %[1]s\n",
-				surnamesFile,
-			)
-		} else {
-			log.Println(resp.Error)
+	if !errors.Is(err, os.ErrNotExist) {
+		surnames = models.RemoveDuplicateSurnames(surnames)
+		if resp := db.Create(&surnames); resp.Error != nil {
+			if errors.As(resp.Error, &perr) && perr.Code == "23505" {
+				log.Printf(
+					"%[1]s contains records that are already in the database. You may want to remove %[1]s\n",
+					surnamesFile,
+				)
+			} else {
+				log.Println(resp.Error)
+			}
 		}
+
+	} else if err != nil {
+		log.Println(err)
 	}
 }
 
