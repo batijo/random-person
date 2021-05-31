@@ -19,13 +19,16 @@ type Obj struct {
 	db *database.Database
 }
 
-func (srv *Obj) registerRoutes(r fiber.Router) {
-	// Routes...
+func (srv *Obj) registerApiRoutes(r fiber.Router) {
 	h := handlers.New(srv.db)
-	r.Get("/", h.Api)
 	r.Get("/name/:gender?", h.Name)
 	r.Get("/surname/:gender?", h.Surname)
 	r.Get("/person/:gender?", h.Person)
+}
+
+func (srv *Obj) registerWebRoutes(r fiber.Router) {
+	h := handlers.New(srv.db)
+	r.Get("/", h.Api)
 }
 
 func New(db *database.Database) *Obj {
@@ -47,6 +50,7 @@ func New(db *database.Database) *Obj {
 		log.Fatal("error: ", err)
 	}
 	srv.Server().MaxConnsPerIP = maxConnsPerIP
+	srv.registerWebRoutes(srv)
 	api := srv.Group("/api")
 	api.Get("", func(c *fiber.Ctx) error {
 		return c.Redirect("api/v0/")
@@ -55,7 +59,7 @@ func New(db *database.Database) *Obj {
 		c.Set("Version", os.Getenv("RP_VERSION"))
 		return c.Next()
 	})
-	srv.registerRoutes(v0)
+	srv.registerApiRoutes(v0)
 	srv.registerMidleware()
 	return &srv
 }
