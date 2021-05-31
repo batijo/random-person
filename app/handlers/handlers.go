@@ -15,7 +15,9 @@ type Handlers struct {
 
 func (h *Handlers) Api(c *fiber.Ctx) error {
 	c.AcceptsLanguages("lt", "en")
-	c.SendString("Hello")
+	c.JSON(fiber.Map{
+		"message": "github.com/batijo/random-person",
+	})
 	return nil
 }
 

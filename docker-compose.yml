@@ -9,6 +9,9 @@ networks:
 services: 
   app:
     container_name: ${APP_CONTAINER_NAME}
+    # build:
+    #   context: .
+    #   dockerfile: Dockerfile
     image: batijo/random-person:${RP_VERSION}
     restart: unless-stopped
     environment: 
@@ -19,6 +22,11 @@ services:
       - RP_DB_PORT=${DB_PORT}
       - RP_PORT=${RP_PORT}
       - RP_VERSION=${RP_VERSION}
+    env_file:
+      - ./config/.env
+    volumes:
+      - ./config/names.json:/src/config/names.json
+      - ./config/surnames.json:/src/config/surnames.json
     ports:
       - ${RP_PORT}:${RP_PORT}
     networks: 

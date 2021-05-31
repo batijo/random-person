@@ -22,7 +22,7 @@ type Obj struct {
 func (srv *Obj) registerRoutes(r fiber.Router) {
 	// Routes...
 	h := handlers.New(srv.db)
-	r.Get("", h.Api)
+	r.Get("/", h.Api)
 	r.Get("/name/:gender?", h.Name)
 	r.Get("/surname/:gender?", h.Surname)
 	r.Get("/person/:gender?", h.Person)
