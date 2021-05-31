@@ -9,7 +9,7 @@ networks:
 services: 
   app:
     container_name: ${APP_CONTAINER_NAME}
-    image: batijo:random-person:${RP_VERSION}
+    image: batijo/random-person:${RP_VERSION}
     restart: unless-stopped
     environment: 
       - RP_DB_HOST=database
