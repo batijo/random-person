@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"math/rand"
+	"os"
 	"time"
 
 	"github.com/batijo/random-person/database"
@@ -16,6 +17,7 @@ type Handlers struct {
 func (h *Handlers) Api(c *fiber.Ctx) error {
 	c.JSON(fiber.Map{
 		"message": "github.com/batijo/random-person",
+		"version": os.Getenv("RP_VERSION"),
 	})
 	return nil
 }
