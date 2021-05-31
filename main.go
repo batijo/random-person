@@ -6,7 +6,6 @@ import (
 
 	"github.com/batijo/random-person/database"
 	"github.com/batijo/random-person/server"
-	"github.com/joho/godotenv"
 )
 
 const (
@@ -17,9 +16,6 @@ const (
 )
 
 func main() {
-	if err := godotenv.Load(configFolder + configEnv); err != nil {
-		log.Fatal("cannot load .env file. error: ", err)
-	}
 	db, err := database.Connect(database.Config{
 		Host:    os.Getenv("RP_DB_HOST"),
 		Name:    os.Getenv("RP_DB_NAME"),

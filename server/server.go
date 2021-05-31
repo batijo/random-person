@@ -26,9 +26,9 @@ func (srv *Obj) registerApiRoutes(r fiber.Router) {
 	r.Get("/person/:gender?", h.Person)
 }
 
-func (srv *Obj) registerWebRoutes(r fiber.Router) {
+func (srv *Obj) registerWebRoutes() {
 	h := handlers.New(srv.db)
-	r.Get("/", h.Api)
+	srv.App.Get("/", h.Api)
 }
 
 func New(db *database.Database) *Obj {
@@ -50,7 +50,7 @@ func New(db *database.Database) *Obj {
 		log.Fatal("error: ", err)
 	}
 	srv.Server().MaxConnsPerIP = maxConnsPerIP
-	srv.registerWebRoutes(srv)
+	srv.registerWebRoutes()
 	api := srv.Group("/api")
 	api.Get("", func(c *fiber.Ctx) error {
 		return c.Redirect("api/v0/")
@@ -67,12 +67,17 @@ func New(db *database.Database) *Obj {
 func (srv *Obj) registerMidleware() {
 	srv.Use(recover.New())
 	// Midleware to limit multiple requests
+	maxRequests, err := strconv.Atoi(os.Getenv("RP_MAX_REQUESTS"))
+	if err != nil {
+		log.Panic(err)
+	}
+	requestExp, err := strconv.Atoi(os.Getenv("RP_MAX_REQUEST_EXP"))
+	if err != nil {
+		log.Panic(err)
+	}
 	srv.Use(limiter.New(limiter.Config{
-		Next: func(c *fiber.Ctx) bool {
-			return c.IP() == os.Getenv("RP_IP")
-		},
-		Max:        5,
-		Expiration: 5 * time.Second,
+		Max:        maxRequests,
+		Expiration: time.Duration(requestExp) * time.Second,
 	}))
 	// Status Not Found midleware
 	srv.Use(func(c *fiber.Ctx) error {
