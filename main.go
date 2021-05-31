@@ -6,6 +6,7 @@ import (
 
 	"github.com/batijo/random-person/database"
 	"github.com/batijo/random-person/server"
+	"github.com/batijo/random-person/utils"
 	"github.com/joho/godotenv"
 )
 
@@ -17,6 +18,7 @@ const (
 )
 
 func main() {
+	utils.WriteLogsToFile(os.Getenv("RP_LOG_FILE"))
 	if err := godotenv.Load(configFolder + configEnv); err != nil {
 		log.Fatal("cannot load .env file. error: ", err)
 	}
