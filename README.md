@@ -1,6 +1,6 @@
 # random-person
 
-A [website](rand.lt) to generate random person
+A [website](rand.lt) to generate random person Lithuanian person.
 
 ## Setup
 
