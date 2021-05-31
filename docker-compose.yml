@@ -26,7 +26,7 @@ services:
     env_file:
       - ./config/.env
     volumes:
-      - ./${RP_LOG_FILE}
+      - ./${RP_LOG_FILE}:/src/${RP_LOG_FILE}
       - ./config/names.json:/src/config/names.json
       - ./config/surnames.json:/src/config/surnames.json
     ports:
