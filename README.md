@@ -1,6 +1,6 @@
 # random-person
 
-A [website](rand.lt) to generate random Lithuanian person.
+A [website](https://rand.lt) to generate random Lithuanian person.
 
 ## Setup
 
@@ -17,7 +17,7 @@ docker network create web
 
 - Configure `.env.example` files in `./` and `/config` directories and remove `.example` when done
 - To upload data to database you need to add json files `names.json` and `surnames.json` to `/config` directory on first start. You should remove those files later for better start up performance.
-- `docker-compose` will not create config file for [watchtower](github.com/containrrr/watchtower) if it does not exist so you should create `config.json` file in `$HOME/.docker/` yourself.
+- `docker-compose` will not create config file for [watchtower](https://github.com/containrrr/watchtower) if it does not exist so you should create `config.json` file in `$HOME/.docker/` yourself.
 
   ```sh
   echo {} > $HOME/.docker/config.json
