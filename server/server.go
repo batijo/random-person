@@ -50,6 +50,7 @@ func New(db *database.Database) *Obj {
 		log.Fatal("error: ", err)
 	}
 	srv.Server().MaxConnsPerIP = maxConnsPerIP
+	srv.registerMidleware()
 	srv.registerWebRoutes()
 	api := srv.Group("/api")
 	api.Get("", func(c *fiber.Ctx) error {
@@ -60,7 +61,7 @@ func New(db *database.Database) *Obj {
 		return c.Next()
 	})
 	srv.registerApiRoutes(v0)
-	srv.registerMidleware()
+	srv.statusNotFoundMiddleware()
 	return &srv
 }
 
@@ -79,6 +80,9 @@ func (srv *Obj) registerMidleware() {
 		Max:        maxRequests,
 		Expiration: time.Duration(requestExp) * time.Second,
 	}))
+}
+
+func (srv *Obj) statusNotFoundMiddleware() {
 	// Status Not Found midleware
 	srv.Use(func(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusNotFound).JSON(
