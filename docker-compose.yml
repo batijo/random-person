@@ -19,7 +19,6 @@ services:
       - RP_DB_PORT=${DB_PORT}
       - RP_PORT=${RP_PORT}
       - RP_VERSION=${RP_VERSION}
-      - RP_LOG_FILE=${RP_LOG_FILE}
     env_file:
       - ./config/.env
     volumes:

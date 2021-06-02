@@ -9,6 +9,7 @@ import (
 	"github.com/batijo/random-person/app/handlers"
 	"github.com/batijo/random-person/database"
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/favicon"
 	"github.com/gofiber/fiber/v2/middleware/limiter"
 	"github.com/gofiber/fiber/v2/middleware/recover"
 )
@@ -50,6 +51,7 @@ func New(db *database.Database) *Obj {
 		log.Fatal("error: ", err)
 	}
 	srv.Server().MaxConnsPerIP = maxConnsPerIP
+	srv.Static("/", "./public")
 	srv.registerMidleware()
 	srv.registerWebRoutes()
 	api := srv.Group("/api")
@@ -66,7 +68,12 @@ func New(db *database.Database) *Obj {
 }
 
 func (srv *Obj) registerMidleware() {
+	// Panic recover midleware
 	srv.Use(recover.New())
+	// Cache favicon to prevent frequent disk access
+	srv.Use(favicon.New(favicon.Config{
+		File: "./public/favicon.ico",
+	}))
 	// Midleware to limit multiple requests
 	maxRequests, err := strconv.Atoi(os.Getenv("RP_MAX_REQUESTS"))
 	if err != nil {
