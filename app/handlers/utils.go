@@ -11,8 +11,18 @@ import (
 	"github.com/batijo/random-person/utils"
 )
 
+type Handlers struct {
+	DB *database.Database
+}
+
 type surnConf struct {
 	MaritalStatus string `query:"m_status"`
+}
+
+func New(db *database.Database) *Handlers {
+	return &Handlers{
+		DB: db,
+	}
 }
 
 func (s *surnConf) randomSurname(db *database.Database, gender int) models.Surname {
