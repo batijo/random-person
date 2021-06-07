@@ -8,6 +8,7 @@ import (
 // StringContainsInt checks if string contains integer.
 // Elements needs to be separated with space
 func StringContainsInt(s string, i int) bool {
+	s = strings.ReplaceAll(s, "\t", " ")
 	arr := strings.Split(s, " ")
 	for _, a := range arr {
 		if num, err := strconv.Atoi(strings.TrimSpace(a)); err == nil {

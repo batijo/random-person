@@ -2,25 +2,11 @@ package handlers
 
 import (
 	"math/rand"
-	"os"
 	"time"
 
-	"github.com/batijo/random-person/database"
 	"github.com/batijo/random-person/utils"
 	"github.com/gofiber/fiber/v2"
 )
-
-type Handlers struct {
-	DB *database.Database
-}
-
-func (h *Handlers) Api(c *fiber.Ctx) error {
-	c.JSON(fiber.Map{
-		"message": "github.com/batijo/random-person",
-		"version": os.Getenv("RP_VERSION"),
-	})
-	return nil
-}
 
 func (h *Handlers) Name(c *fiber.Ctx) error {
 	p := c.Params("gender")
@@ -59,10 +45,4 @@ func (h *Handlers) Person(c *fiber.Ctx) error {
 		"name":    name.Name,
 		"surname": surname.Surname,
 	})
-}
-
-func New(db *database.Database) *Handlers {
-	return &Handlers{
-		DB: db,
-	}
 }
