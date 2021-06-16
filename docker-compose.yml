@@ -23,13 +23,20 @@ services:
       - ./config/.env
     volumes:
       - ./config:/src/config
-    ports:
-      - ${RP_PORT}:${RP_PORT}
     networks: 
       - internal
-      - web
     depends_on: 
       - database
+    
+  frontend:
+    container_name: ${APP_GUI_NAME}
+    build:
+      context: .
+      dockerfile: ./frontend/Dockerfile
+    networks: 
+      - internal
+    depends_on: 
+      - app   
 
   database:
     container_name: ${DATABASE_CONTAINER_NAME}
@@ -49,3 +56,33 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
       - $HOME/.docker/config.json:/config.json
     command: --interval 30
+
+  nginx:
+    container_name: nginx
+    image: jonasal/nginx-certbot:2.2.0-nginx1.21.0-alpine
+    restart: unless-stopped
+    environment:
+      - CERTBOT_EMAIL
+      - STAGING
+      - DHPARAM_SIZE
+      - RSA_KEY_SIZE
+      - RENEWAL_INTERVAL
+      - DEBUG
+    env_file:
+      - ./nginx/.env
+    ports:
+      - 80:80
+      - 443:443
+    volumes:
+      - nginx_secrets:/etc/letsencrypt
+      - ./nginx/user_conf.d:/etc/nginx/user_conf.d
+      - ./frontend/dist:/www/static/frontend
+    networks: 
+      - internal
+      - web
+    depends_on:
+      - app
+      - frontend
+
+volumes:
+  nginx_secrets:
