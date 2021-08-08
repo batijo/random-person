@@ -49,7 +49,7 @@ func (h *Handlers) Person(c *fiber.Ctx) error {
 		rand.Seed(time.Now().UnixNano())
 		gender = rand.Intn(2)
 	}
-	name := h.DB.RandomName(gender)
+	name := h.DB.RandomNameNormativeStatus(os.Getenv("RP_DEF_NORMATIVE_STAT"), gender)
 	q := new(surnConf)
 	if err := c.QueryParser(q); err != nil {
 		return err
@@ -59,6 +59,10 @@ func (h *Handlers) Person(c *fiber.Ctx) error {
 		"name":    name.Name,
 		"surname": surname.Surname,
 	})
+}
+
+func (h *Handlers) Version(c *fiber.Ctx) error {
+	return c.JSON(os.Getenv("RP_VERSION"))
 }
 
 func New(db *database.Database) *Handlers {

@@ -1,51 +1,15 @@
-package ssp
+package sp
 
-import (
-	"testing"
-)
+import "testing"
 
-func Test_removeSuffix(t *testing.T) {
-	tests := []struct {
-		val string
-		exp string
-	}{
-		{"Kazlauskas", "Kazlausk"},
-		{"Stankevičius", "Stankevič"},
-		{"Butkus", "Butk"},
-		{"Adomaitis", "Adomait"},
-		{"Kairys", "Kair"},
-		{"Juška", "Jušk"},
-		{"Dirsė", "Dirs"},
-		{"Stundžia", "Stundž"},
-		{"Džiūve", "Džiūv"},
-		{"Šlymuo", "Šlym"},
-		{"Talat", "Talat"},
-		{"Kupcias", "Kupc"},
-		{"Šaltais", "Šalt"},
-		{"Tarlo", "Tarl"},
-		{"Taulai", "Taul"},
-		{"Kalnau", "Kaln"},
-	}
-	for _, d := range tests {
-		res := removeSuffix(d.val)
-		if res != d.exp {
-			t.Errorf(
-				"DATA: %v EXPECTED: %v, GOT: %v",
-				d.val,
-				d.exp,
-				res,
-			)
-		}
-	}
-}
-
-func Test_Feminize(t *testing.T) {
+func Test_FeminizeMaleSurname(t *testing.T) {
 	tests := []struct {
 		val           string
-		maritalStatus uint
+		maritalStatus uint8
 		exp           string
 	}{
 		{"Kazlauskas", 0, "Kazlauskaitė"},
+		{"Kamūnas", 0, "Kamūnaitė"},
 		{"Stankevičius", 0, "Stankevičiūtė"},
 		{"Butkus", 0, "Butkutė"},
 		{"Adomaitis", 0, "Adomaitytė"},
@@ -54,7 +18,7 @@ func Test_Feminize(t *testing.T) {
 		{"Dirsė", 0, "Dirsaitė"},
 		{"Stundžia", 0, "Stundžiūtė"},
 		{"Džiūve", 0, "Džiūvytė"},
-		{"Šlymuo", 0, "Šlymytė"},
+		{"Šlymuo", 0, "Šlymaitė"},
 		{"Talat", 0, "Talatytė"},
 		{"Kupcias", 0, "Kupcaitė"},
 		{"Šaltais", 0, "Šaltaitė"},
@@ -95,7 +59,7 @@ func Test_Feminize(t *testing.T) {
 		{"Kalnau", 2, "Kalnė"},
 	}
 	for _, d := range tests {
-		res := Feminize(d.val, d.maritalStatus)
+		res := FeminizeMaleSurname(d.val, d.maritalStatus)
 		if res != d.exp {
 			t.Errorf(
 				"DATA: val: %v maritalStatus: %v EXPECTED: %v, GOT: %v",

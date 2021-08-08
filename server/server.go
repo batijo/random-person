@@ -25,6 +25,7 @@ func (srv *Obj) registerApiRoutes(r fiber.Router) {
 	r.Get("/name/:gender?", h.Name)
 	r.Get("/surname/:gender?", h.Surname)
 	r.Get("/person/:gender?", h.Person)
+	r.Get("/version", h.Version)
 }
 
 func (srv *Obj) registerWebRoutes() {

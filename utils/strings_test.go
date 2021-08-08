@@ -2,7 +2,7 @@ package utils
 
 import "testing"
 
-func Test_IsCharInElements(t *testing.T) {
+func Test_IsCharInString(t *testing.T) {
 	tests := []struct {
 		val      string
 		elements string
@@ -21,7 +21,7 @@ func Test_IsCharInElements(t *testing.T) {
 		{"as", "asb", false},
 	}
 	for _, d := range tests {
-		res := IsCharInElements(d.val, d.elements)
+		res := IsCharInString(d.val, d.elements)
 		if res != d.exp {
 			t.Errorf(
 				"DATA: val: %v elements: %v EXPECTED: %v, GOT: %v",
