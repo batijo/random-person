@@ -11,7 +11,7 @@ func FeminizeMaleSurname(s string, status uint8) string {
 	if status > 2 {
 		return ""
 	}
-	surname := removeSuffix(s)
+	surname := RemoveSuffix(s)
 	switch status {
 	case 0:
 		if utils.LastElem(surname) == "k" && utils.StrElemEnd(surname, 2) == "t" {

@@ -33,18 +33,18 @@ func LastElem(s string) string {
 }
 
 // StrElemEnd returns character at given position from end, same as strElem just inverted.
-// elem represent which element from end to return. 1 would be last element
-func StrElemEnd(s string, elem int) string {
-	return StrElem(s, utf8.RuneCountInString(s)-elem)
+// position represent which element from end to return. 1 would be last element
+func StrElemEnd(s string, position int) string {
+	return StrElem(s, utf8.RuneCountInString(s)-position)
 }
 
 // StrElem returns one character of string at give position.
 // It returns empty string if element you want to access is out of range
-func StrElem(s string, elem int) string {
-	if utf8.RuneCountInString(s) <= elem || elem < 0 {
+func StrElem(s string, position int) string {
+	if utf8.RuneCountInString(s) <= position || position < 0 {
 		return ""
 	}
-	return string([]rune(s)[elem])
+	return string([]rune(s)[position])
 }
 
 // TrimLastElem trims last character from end of a string

@@ -1,7 +1,11 @@
 package models
 
 type Surname struct {
-	ID      uint   `json:"id" gorm:"primaryKey"`
+	ID uint `json:"id" gorm:"primaryKey"`
+	*SurnameOnly
+}
+
+type SurnameOnly struct {
 	Surname string `json:"surname" gorm:"uniqueIndex"`
 }
 

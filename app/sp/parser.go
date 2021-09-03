@@ -4,7 +4,7 @@ package sp
 import "github.com/batijo/random-person/utils"
 
 // Removes suffix from Lithuanian male s or any name
-func removeSuffix(s string) string {
+func RemoveSuffix(s string) string {
 	if utils.LastElem(s) == "s" {
 		if !utils.IsVowel(utils.StrElemEnd(s, 2)) {
 			return s

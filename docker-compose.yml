@@ -1,17 +1,17 @@
 version: '3'
 
-networks: 
+networks:
   internal:
     external: false
   web:
     external: true
 
-services: 
+services:
   app:
     container_name: ${APP_CONTAINER_NAME}
     image: batijo/random-person:${RP_VERSION}
     restart: unless-stopped
-    environment: 
+    environment:
       - RP_DB_HOST=database
       - RP_DB_NAME=${DB_NAME}
       - RP_DB_USER=${DB_USER}
@@ -25,10 +25,10 @@ services:
       - ./config:/src/config
     ports:
       - ${RP_PORT}:${RP_PORT}
-    networks: 
+    networks:
       - internal
       - web
-    depends_on: 
+    depends_on:
       - database
 
   database:
@@ -41,7 +41,7 @@ services:
       - POSTGRES_PASSWORD=${DB_PASSWORD}
     networks:
       - internal
-  
+
   watchtower:
     container_name: watchtower
     image: containrrr/watchtower

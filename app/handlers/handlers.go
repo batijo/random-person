@@ -16,15 +16,15 @@ type Handlers struct {
 
 func (h *Handlers) Api(c *fiber.Ctx) error {
 	c.JSON(fiber.Map{
-		"message": "github.com/batijo/random-person",
+		"app":     "github.com/batijo/random-person",
+		"api":     "https://github.com/batijo/random-person/tree/release#api-usage",
 		"version": os.Getenv("RP_VERSION"),
 	})
 	return nil
 }
 
 func (h *Handlers) Name(c *fiber.Ctx) error {
-	p := c.Params("gender")
-	name := h.DB.RandomName(getGender(p))
+	name := h.DB.RandomNameNormativeStatus(os.Getenv("RP_DEF_NORMATIVE_STAT"), getGender(c.Params("gender")))
 	return c.JSON(fiber.Map{
 		"name": name.Name,
 	})
@@ -35,16 +35,14 @@ func (h *Handlers) Surname(c *fiber.Ctx) error {
 	if err := c.QueryParser(q); err != nil {
 		return err
 	}
-	p := c.Params("gender")
-	surname := q.randomSurname(h.DB, getGender(p))
+	surname := q.randomSurname(h.DB, getGender(c.Params("gender")))
 	return c.JSON(fiber.Map{
 		"surname": surname.Surname,
 	})
 }
 
 func (h *Handlers) Person(c *fiber.Ctx) error {
-	p := c.Params("gender")
-	gender := getGender(p)
+	gender := getGender(c.Params("gender"))
 	if !utils.StringContainsInt("0 1", gender) {
 		rand.Seed(time.Now().UnixNano())
 		gender = rand.Intn(2)

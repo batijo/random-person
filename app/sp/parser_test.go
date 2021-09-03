@@ -4,7 +4,7 @@ import (
 	"testing"
 )
 
-func Test_removeSuffix(t *testing.T) {
+func Test_RemoveSuffix(t *testing.T) {
 	tests := []struct {
 		val string
 		exp string
@@ -27,7 +27,7 @@ func Test_removeSuffix(t *testing.T) {
 		{"Kalnau", "Kaln"},
 	}
 	for _, d := range tests {
-		res := removeSuffix(d.val)
+		res := RemoveSuffix(d.val)
 		if res != d.exp {
 			t.Errorf(
 				"DATA: %v EXPECTED: %v, GOT: %v",
