@@ -5,7 +5,7 @@ import "time"
 type Person struct {
 	*NameOnly
 	*SurnameOnly
-	Gender    bool      `json:"gender,omitempty"`
+	Gender    uint      `json:"gender,omitempty"`
 	BirthDate time.Time `json:"birth_date,omitempty"`
 	Email     string    `json:"email,omitempty"`
 }

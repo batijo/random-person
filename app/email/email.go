@@ -1,25 +1,25 @@
 package email
 
 import (
-	"errors"
 	"fmt"
 	"strconv"
 	"strings"
 
 	"github.com/batijo/random-person/app/models"
+	"github.com/batijo/random-person/app/sp"
 	"github.com/batijo/random-person/utils"
 )
 
-func New(person models.Person) string {
-
-	return ""
+type Email struct {
+	*models.Person
 }
 
-func ParseWithTemplate(template string, person models.Person) (string, error) {
-	if err := validateTemplate(template); err != nil {
-		return "", err
-	}
-	return "", nil
+func New(person models.Person) Email {
+	return Email{Person: &person}
+}
+
+func (e *Email) Random() string {
+	return ""
 }
 
 // [fn] - inserts full persons name
@@ -28,7 +28,6 @@ func ParseWithTemplate(template string, person models.Person) (string, error) {
 // [sws] - inserts surname without suffix
 // [by] - inserts birth year
 // [pby] - inserts partial birth year (if year is 1985, inserts 85)
-// [a] - inserts age
 // [command{3/2}] - command can be any command , number 3 represents which element, 2 how many time multiply it
 // e.g. Surname is Kazlauskas so [sws{4/3}] is Kazlllausk
 // number 3 can be replaced with e for last letter
@@ -39,74 +38,145 @@ func ParseWithTemplate(template string, person models.Person) (string, error) {
 // e.g. Surname is Kazlauskas so [sws{v/3}] is Kaaazlausk
 // You can also add e before v
 // e.g. Surname is Kazlauskas so [fs{ev/4}] is Kaazlauskaaaas
-func validateTemplate(template string) error {
-	commands := []string{"fn", "fs", "nws", "sws", "by", "pby", "a"}
-	chars := strings.Split(template, "")
-	i := 0
-	eoc := true
-	for i < len(chars) {
-		eoc = true
+// everything what goes after @ symbol is added without checking
+// if you don't add @ a random popular domain will be added
+// e.g. @gmail.com @yahoo.com @outlook.com ...
+func (e *Email) ParseWithTemplate(template string) {
+	var (
+		chars       = strings.Split(template, "")
+		startOfCopy = 0
+	)
+	for i := 0; i < len(chars); i++ {
 		if chars[i] == "[" {
-			eoc = false
-			j := i + 1
-			for j < len(chars) {
+			e.Email += utils.ArrToString(chars[startOfCopy:i])
+			for j := i + 1; j < len(chars); j++ {
 				if chars[j] == "]" {
-					if chars[j-1] != "}" && !utils.ArrContains(commands, utils.ArrToString(chars[i+1:j])) {
-						return fmt.Errorf("unknown command: %v", utils.ArrToString(chars[i+1:j]))
-					}
-					i = j + 1
-					eoc = true
+					e.Email += e.parseTemplateCommand(utils.ArrToString(chars[i+1 : j]))
+					startOfCopy = j + 1
+					i = j
 					break
-				} else if chars[j] == "{" {
-					if !utils.ArrContains(commands, utils.ArrToString(chars[i+1:j])) {
-						return fmt.Errorf("unknown command: %v", utils.ArrToString(chars[i+1:j]))
-					} else if len(chars) < j+6 {
-						return fmt.Errorf("wrong sub command formating")
-					}
-					k := j + 1
-					separator := 0
-					for k < len(chars) {
-						if chars[k] == "/" {
-							separator = k
-							if len(chars) < k+4 {
-								return fmt.Errorf("wrong sub command formating")
-							}
-							subCommand := utils.ArrToString(chars[j+1 : k])
-							if _, err := strconv.Atoi(subCommand); err != nil {
-								switch len(subCommand) {
-								case 1:
-									if !utils.IsCharInString(subCommand, "ev") {
-										return fmt.Errorf("unknown sub command: %v", subCommand)
-									}
-								case 2:
-									if chars[j+1] != "e" {
-										return fmt.Errorf("unknown sub command: %v", subCommand)
-									} else if !(chars[j+2] == "v" || utils.IsCharInString(chars[j+2], "0123456789")) {
-										return fmt.Errorf("unknown sub command: %v", subCommand)
-									}
-								default:
-									if _, err := strconv.Atoi(utils.ArrToString(chars[j+2 : k])); !((chars[j+1] == "e" || chars[j+1] == "v") && err == nil) {
-										return fmt.Errorf("unknown sub command: %v", subCommand)
-									}
-								}
-							}
-						} else if chars[k] == "}" {
-							if _, err := strconv.Atoi(utils.ArrToString(chars[separator+1 : k])); err != nil {
-								return fmt.Errorf("wrong sub command formating: %v", utils.ArrToString(chars[j+1:k]))
-							}
-							j = k
-							break
-						}
-						k++
-					}
 				}
-				j++
+			}
+		} else if chars[i] == "@" {
+			e.Email += utils.ArrToString(chars[startOfCopy:i])
+			e.Email += utils.ArrToString(chars[i:])
+			break
+		} else if len(chars) == i+1 && !(chars[i+1] == "@" || chars[i+1] == "]") {
+			e.Email += utils.ArrToString(chars[startOfCopy:])
+			// TODO: random email domain
+			break
+		}
+	}
+}
+
+func (e *Email) parseTemplateCommand(command string) string {
+	var (
+		word        string
+		newWord     = ""
+		chars       = strings.Split(command, "")
+		subCommands []string
+	)
+	for i := 0; i < len(chars); i++ {
+		if chars[i] == "{" {
+			word = e.getByCommand(utils.ArrToString(chars[:i]))
+			chars = chars[i:]
+			break
+		} else if len(chars) == i+1 {
+			word = e.getByCommand(utils.ArrToString(chars))
+			chars = chars[i+1:]
+			break
+		}
+	}
+	for i := 0; i < len(chars); i++ {
+		if chars[i] == "{" {
+			for j := i + 1; j < len(chars); j++ {
+				if chars[j] == "}" {
+					subCommands = append(subCommands, utils.ArrToString(chars[i+1:j]))
+					i = j
+					break
+				}
 			}
 		}
-		if !eoc {
-			return errors.New("command ending bracket is missing")
-		}
-		i++
 	}
-	return nil
+	charMap := parseTemplateSubCommands(subCommands, word)
+	for i, s := range []rune(word) {
+		if charMap[i] != 0 {
+			for j := 0; j < charMap[i]; j++ {
+				newWord += string(s)
+			}
+		} else {
+			newWord += string(s)
+		}
+	}
+	return newWord
+}
+
+func (e *Email) getByCommand(command string) string {
+	switch command {
+	case "fn":
+		return e.Name
+	case "fs":
+		return e.Surname
+	case "nws":
+		return sp.RemoveSuffix(e.Name)
+	case "sws":
+		return sp.RemoveSuffix(e.Surname)
+	case "by":
+		return fmt.Sprint(e.BirthDate.Year())
+	case "pby":
+		return utils.Trim(fmt.Sprint(e.BirthDate.Year()), 2, false)
+	}
+	return "boi"
+}
+
+func parseTemplateSubCommands(subCommans []string, word string) map[int]int {
+	var charMap = make(map[int]int)
+	if len(subCommans) < 1 {
+		return charMap
+	}
+	for _, fsc := range subCommans {
+		ssc := strings.Split(fsc, "/")
+		if len(ssc) != 2 {
+			continue
+		}
+		subCommand := ssc[0]
+		iterations, err := strconv.Atoi(ssc[1])
+		if err != nil {
+			continue
+		}
+		if position, err := strconv.Atoi(subCommand); err == nil {
+			if position >= len([]rune(word)) {
+				continue
+			}
+			charMap[position] = iterations
+		} else if char := utils.StrElem(subCommand, 0); char == "e" {
+			if len([]rune(subCommand)) > 1 {
+				elem := utils.Trim(subCommand, 1, false)
+				if elem != "v" {
+					position, err := strconv.Atoi(elem)
+					if err != nil || position > len([]rune(word)) {
+						continue
+					}
+					charMap[len([]rune(word))-position] = iterations
+				} else {
+					for i := len([]rune(word)); i >= 0; i-- {
+						if utils.IsVowel(utils.StrElem(word, i)) {
+							charMap[i] = iterations
+							break
+						}
+					}
+				}
+			} else {
+				charMap[len([]rune(word))-1] = iterations
+			}
+		} else if subCommand == "v" {
+			for i := 0; i < len([]rune(word)); i++ {
+				if utils.IsVowel(utils.StrElem(word, i)) {
+					charMap[i] = iterations
+					break
+				}
+			}
+		}
+	}
+	return charMap
 }
