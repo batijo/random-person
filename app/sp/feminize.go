@@ -14,11 +14,11 @@ func FeminizeMaleSurname(s string, status uint8) string {
 	surname := RemoveSuffix(s)
 	switch status {
 	case 0:
-		if utils.LastElem(surname) == "k" && utils.StrElemEnd(surname, 2) == "t" {
+		if utils.LastElem(surname) == "k" && utils.StrElemEnd(surname, 1) == "t" {
 			surname += "utė"
 		} else if utils.IsCharInString(utils.LastElem(surname), "čšž") {
 			surname += "iūtė"
-		} else if utils.IsVowel(utils.StrElemEnd(surname, 2)) && !utils.IsCharInString(utils.LastElem(surname), "mn") {
+		} else if utils.IsVowel(utils.StrElemEnd(surname, 1)) && !utils.IsCharInString(utils.LastElem(surname), "mn") {
 			surname += "ytė"
 		} else {
 			surname += "aitė"

@@ -33,9 +33,9 @@ func LastElem(s string) string {
 }
 
 // StrElemEnd returns character at given position from end, same as strElem just inverted.
-// position represent which element from end to return. 1 would be last element
+// position represent which element from end to return. 0 would be last element
 func StrElemEnd(s string, position int) string {
-	return StrElem(s, utf8.RuneCountInString(s)-position)
+	return StrElem(s, utf8.RuneCountInString(s)-position-1)
 }
 
 // StrElem returns one character of string at give position.
