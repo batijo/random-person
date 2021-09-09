@@ -10,15 +10,7 @@ import (
 	"github.com/batijo/random-person/utils"
 )
 
-type Email struct {
-	*models.Person
-}
-
-func New(person models.Person) Email {
-	return Email{Person: &person}
-}
-
-func (e *Email) Random() string {
+func Random(p *models.Person) string {
 	return ""
 }
 
@@ -41,35 +33,35 @@ func (e *Email) Random() string {
 // everything what goes after @ symbol is added without checking
 // if you don't add @ a random popular domain will be added
 // e.g. @gmail.com @yahoo.com @outlook.com ...
-func (e *Email) ParseWithTemplate(template string) {
+func ParseWithTemplate(template string, p *models.Person) {
 	var (
 		chars       = strings.Split(template, "")
 		startOfCopy = 0
 	)
 	for i := 0; i < len(chars); i++ {
 		if chars[i] == "[" {
-			e.Email += utils.ArrToString(chars[startOfCopy:i])
+			p.Email += utils.ArrToString(chars[startOfCopy:i])
 			for j := i + 1; j < len(chars); j++ {
 				if chars[j] == "]" {
-					e.Email += e.parseTemplateCommand(utils.ArrToString(chars[i+1 : j]))
+					p.Email += parseTemplateCommand(utils.ArrToString(chars[i+1:j]), p)
 					startOfCopy = j + 1
 					i = j
 					break
 				}
 			}
 		} else if chars[i] == "@" {
-			e.Email += utils.ArrToString(chars[startOfCopy:i])
-			e.Email += utils.ArrToString(chars[i:])
+			p.Email += utils.ArrToString(chars[startOfCopy:i])
+			p.Email += utils.ArrToString(chars[i:])
 			break
 		} else if len(chars) == i+1 && !(chars[i+1] == "@" || chars[i+1] == "]") {
-			e.Email += utils.ArrToString(chars[startOfCopy:])
+			p.Email += utils.ArrToString(chars[startOfCopy:])
 			// TODO: random email domain
 			break
 		}
 	}
 }
 
-func (e *Email) parseTemplateCommand(command string) string {
+func parseTemplateCommand(command string, p *models.Person) string {
 	var (
 		word        string
 		newWord     = ""
@@ -78,11 +70,11 @@ func (e *Email) parseTemplateCommand(command string) string {
 	)
 	for i := 0; i < len(chars); i++ {
 		if chars[i] == "{" {
-			word = e.getByCommand(utils.ArrToString(chars[:i]))
+			word = getByCommand(utils.ArrToString(chars[:i]), p)
 			chars = chars[i:]
 			break
 		} else if len(chars) == i+1 {
-			word = e.getByCommand(utils.ArrToString(chars))
+			word = getByCommand(utils.ArrToString(chars), p)
 			chars = chars[i+1:]
 			break
 		}
@@ -111,24 +103,25 @@ func (e *Email) parseTemplateCommand(command string) string {
 	return newWord
 }
 
-func (e *Email) getByCommand(command string) string {
+func getByCommand(command string, p *models.Person) string {
 	switch command {
 	case "fn":
-		return e.Name
+		return p.Name
 	case "fs":
-		return e.Surname
+		return p.Surname
 	case "nws":
-		return sp.RemoveSuffix(e.Name)
+		return sp.RemoveSuffix(p.Name)
 	case "sws":
-		return sp.RemoveSuffix(e.Surname)
+		return sp.RemoveSuffix(p.Surname)
 	case "by":
-		return fmt.Sprint(e.BirthDate.Year())
+		return fmt.Sprint(p.BirthDate.Year())
 	case "pby":
-		return utils.Trim(fmt.Sprint(e.BirthDate.Year()), 2, false)
+		return utils.Trim(fmt.Sprint(p.BirthDate.Year()), 2, false)
 	}
 	return "boi"
 }
 
+// TODO: refactor
 func parseTemplateSubCommands(subCommans []string, word string) map[int]int {
 	var charMap = make(map[int]int)
 	if len(subCommans) < 1 {

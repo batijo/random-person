@@ -10,64 +10,64 @@ import (
 
 func Test_ParseWithTemplate(t *testing.T) {
 	tests := []struct {
-		email    Email
+		person   models.Person
 		template string
 		exp      string
 	}{ // Birth year 2003
 		{
-			New(newPerson("Jonas", "Kazlauskas", 18, 18, 0)),
+			newTestPerson("Jonas", "Kazlauskas", 18, 18, 0),
 			"[fn].[fs]@gmail.com",
 			"Jonas.Kazlauskas@gmail.com",
 		},
 		{
-			New(newPerson("Jonas", "Kazlauskas", 18, 18, 0)),
+			newTestPerson("Jonas", "Kazlauskas", 18, 18, 0),
 			"[nws].[sws]@gmail.com",
 			"Jon.Kazlausk@gmail.com",
 		},
 		{
-			New(newPerson("Jonas", "Kazlauskas", 18, 18, 0)),
+			newTestPerson("Jonas", "Kazlauskas", 18, 18, 0),
 			"[nws].[sws].[by]@gmail.com",
 			"Jon.Kazlausk.2003@gmail.com",
 		},
 		{
-			New(newPerson("Jonas", "Kazlauskas", 18, 18, 0)),
+			newTestPerson("Jonas", "Kazlauskas", 18, 18, 0),
 			"[nws].[sws].[pby]@gmail.com",
 			"Jon.Kazlausk.03@gmail.com",
 		},
 		{
-			New(newPerson("Jonas", "Kazlauskas", 18, 18, 0)),
+			newTestPerson("Jonas", "Kazlauskas", 18, 18, 0),
 			"[nws].[sws{e/3}]@gmail.com",
 			"Jon.Kazlauskkk@gmail.com",
 		},
 		{
-			New(newPerson("Jonas", "Kazlauskas", 18, 18, 0)),
+			newTestPerson("Jonas", "Kazlauskas", 18, 18, 0),
 			"[nws{ev/4}{e/3}].[sws]@gmail.com",
 			"Joooonnn.Kazlausk@gmail.com",
 		},
 		{
-			New(newPerson("Jonas", "Kazlauskas", 18, 18, 0)),
+			newTestPerson("Jonas", "Kazlauskas", 18, 18, 0),
 			"[nws{4/3}].[sws{4/3}]@gmail.com",
 			"Jon.Kazlaaausk@gmail.com",
 		},
 		{
-			New(newPerson("Jonas", "Kazlauskas", 18, 18, 0)),
+			newTestPerson("Jonas", "Kazlauskas", 18, 18, 0),
 			"[nws{}].[sws{}]@gmail.com",
 			"Jon.Kazlausk@gmail.com",
 		},
 		{
-			New(newPerson("ąčęėįš", "žūųšįėęč", 18, 18, 0)),
+			newTestPerson("ąčęėįš", "žūųšįėęč", 18, 18, 0),
 			"[fn{ev/2}{e/3}].[fs{v/2}]@gmail.com",
 			"ąčęėįįššš.žūūųšįėęč@gmail.com",
 		},
 	}
 	for _, d := range tests {
-		d.email.ParseWithTemplate(d.template)
-		if d.exp != d.email.Email {
+		ParseWithTemplate(d.template, &d.person)
+		if d.exp != d.person.Email {
 			t.Errorf(
 				"DATA: template %v EXPECTED: %v, GOT: %v",
 				d.template,
 				d.exp,
-				d.email.Email,
+				d.person.Email,
 			)
 		}
 	}
@@ -114,43 +114,11 @@ func Test_parseTemplateSubCommands(t *testing.T) {
 	}
 }
 
-func newPerson(nm, srnm string, agf, agl, gender int) models.Person {
+func newTestPerson(nm, srnm string, agf, agl, gender int) models.Person {
 	return models.Person{
 		NameOnly:    &models.NameOnly{Name: nm},
 		SurnameOnly: &models.SurnameOnly{Surname: srnm},
 		BirthDate:   age.GetRandomBirthDateByAgeRangeAt(agf, agl, age.GetBirthDate(2021, 9, 3)),
 		Gender:      uint(gender),
 	}
-	// 	var persons = []models.Person{
-	// 		{
-	// 			NameOnly:    &models.NameOnly{Name: "Jonas"},
-	// 			SurnameOnly: &models.SurnameOnly{Surname: "Kazlauskas"},
-	// 			BirthDate:   age.GetRandomBirthDateByAgeRangeAt(18, 18, age.GetBirthDate(2021, 9, 3)),
-	// 			Gender:      0,
-	// 		},
-	// 		{
-	// 			NameOnly:    &models.NameOnly{Name: "Jonas"},
-	// 			SurnameOnly: &models.SurnameOnly{Surname: "Kazlauskas"},
-	// 			BirthDate:   age.GetRandomBirthDateByAgeRangeAt(18, 20, age.GetBirthDate(2021, 9, 3)),
-	// 			Gender:      0,
-	// 		},
-	// 		{
-	// 			NameOnly:    &models.NameOnly{Name: "Jonas"},
-	// 			SurnameOnly: &models.SurnameOnly{Surname: "Kazlauskas"},
-	// 			BirthDate:   age.GetRandomBirthDateByAgeRangeAt(14, 18, age.GetBirthDate(2021, 9, 3)),
-	// 			Gender:      0,
-	// 		},
-	// 		{
-	// 			NameOnly:    &models.NameOnly{Name: "Jonas"},
-	// 			SurnameOnly: &models.SurnameOnly{Surname: "Kazlauskas"},
-	// 			BirthDate:   age.GetRandomBirthDateByAgeRangeAt(30, 63, age.GetBirthDate(2021, 9, 3)),
-	// 			Gender:      0,
-	// 		},
-	// 		{
-	// 			NameOnly:    &models.NameOnly{Name: "Jonas"},
-	// 			SurnameOnly: &models.SurnameOnly{Surname: "Kazlauskas"},
-	// 			BirthDate:   age.GetRandomBirthDateByAgeRangeAt(18, 30, age.GetBirthDate(2021, 9, 3)),
-	// 			Gender:      0,
-	// 		},
-	// 	}
 }

@@ -4,15 +4,18 @@ import (
 	"log"
 	"os"
 
+	"github.com/batijo/random-person/app/email"
 	"github.com/batijo/random-person/database"
 	"github.com/batijo/random-person/server"
 )
 
 const (
-	configFolder = "config/"
-	namesFile    = "names.json"
-	surnamesFile = "surnames.json"
-	configEnv    = ".env"
+	configFolder   = "config/"
+	namesFile      = "names.json"
+	surnamesFile   = "surnames.json"
+	configEnv      = ".env"
+	emailDomains   = "email_domains.json"
+	emailTemplates = "email_templates.json"
 )
 
 func main() {
@@ -25,6 +28,14 @@ func main() {
 	})
 	if err != nil {
 		log.Panic(err)
+	}
+	err = email.LoadDomains(configFolder + emailDomains)
+	if err != nil {
+		log.Println("warning: error loading email domains data")
+	}
+	err = email.LoadTemplates(configFolder + emailTemplates)
+	if err != nil {
+		log.Println("warning: error loading email templates data")
 	}
 	srv := server.New(&db)
 	db.InsertData(configFolder, namesFile, surnamesFile)
