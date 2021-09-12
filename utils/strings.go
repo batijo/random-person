@@ -74,6 +74,36 @@ func Trim(s string, elemCount int, right bool) string {
 	return s
 }
 
+// TrimUntil trims characters until n left
+func TrimUntil(s string, n int, right bool) string {
+	if len([]rune(s)) <= n {
+		return s
+	}
+	return Trim(s, len([]rune(s))-n, right)
+}
+
+// FilterChars removes all characters from string which are in chars string
+func FilterChars(s, chars string) string {
+	arr := strings.Split(s, "")
+	newString := ""
+	for _, c := range arr {
+		if !IsCharInString(c, chars) {
+			newString += c
+		}
+	}
+	return newString
+}
+
+// FilterNumbers removes all numbers from string
+func FilterNumbers(s string) string {
+	return FilterChars(s, "0123456789")
+}
+
+// FilterLetters removes all letters from string
+func FilterLetters(s string) string {
+	return FilterChars(s, "ąčęėįšųūžqwertyuiopasdfghjklzxcvbnm")
+}
+
 func ArrContains(arr []string, s string) bool {
 	for _, a := range arr {
 		if a == s {

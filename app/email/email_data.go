@@ -3,6 +3,8 @@ package email
 import (
 	"encoding/json"
 	"io/ioutil"
+
+	wr "github.com/mroth/weightedrand"
 )
 
 type weightData struct {
@@ -10,30 +12,48 @@ type weightData struct {
 	Weight uint   `json:"weight"`
 }
 
-type weightsData struct {
-	WeightsData []weightData `json:"weightsData"`
-}
-
 var (
-	templates weightsData
-	domains   weightsData
+	templates *wr.Chooser
+	domains   *wr.Chooser
 )
 
-func (e *weightsData) loadDataFromFile(filepath string) error {
+func loadDataFromFile(filepath string) ([]weightData, error) {
+	var wd []weightData
 	data, err := ioutil.ReadFile(filepath)
+	if err != nil {
+		return wd, err
+	}
+	err = json.Unmarshal(data, &wd)
+	if err != nil {
+		return wd, err
+	}
+	return wd, nil
+}
+
+func getChoices(data []weightData) []wr.Choice {
+	var choices []wr.Choice
+	for _, wd := range data {
+		choices = append(choices, wr.Choice{Item: wd.Data, Weight: wd.Weight})
+	}
+	return choices
+}
+
+func LoadData(templatesPath, domainsPath string) error {
+	templatesData, err := loadDataFromFile(templatesPath)
 	if err != nil {
 		return err
 	}
-	err = json.Unmarshal(data, &e)
+	templates, err = wr.NewChooser(getChoices(templatesData)...)
+	if err != nil {
+		return err
+	}
+	domainsData, err := loadDataFromFile(domainsPath)
+	if err != nil {
+		return err
+	}
+	domains, err = wr.NewChooser(getChoices(domainsData)...)
 	if err != nil {
 		return err
 	}
 	return nil
-}
-
-func LoadTemplates(filepath string) error {
-	return templates.loadDataFromFile(filepath)
-}
-func LoadDomains(filepath string) error {
-	return domains.loadDataFromFile(filepath)
 }

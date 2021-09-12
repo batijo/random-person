@@ -108,3 +108,29 @@ func Test_StrElem(t *testing.T) {
 		}
 	}
 }
+
+func Test_FilterChars(t *testing.T) {
+	tests := []struct {
+		val   string
+		chars string
+		exp   string
+	}{
+		{"asdąčęfdąąrągėg", "čąd", "asęfrgėg"},
+		{"av564sdčę", "5č", "av64sdę"},
+		{"av564sdčęa", "av", "564sdčę"},
+		{"av564sdčęa", "0123456789", "avsdčęa"},
+		{"avsdčęa", "0123456789", "avsdčęa"},
+	}
+	for _, d := range tests {
+		res := FilterChars(d.val, d.chars)
+		if res != d.exp {
+			t.Errorf(
+				"DATA: val: %v chars: %v EXPECTED: %v, GOT: %v",
+				d.val,
+				d.chars,
+				d.exp,
+				res,
+			)
+		}
+	}
+}

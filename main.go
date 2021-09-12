@@ -29,13 +29,9 @@ func main() {
 	if err != nil {
 		log.Panic(err)
 	}
-	err = email.LoadDomains(configFolder + emailDomains)
+	err = email.LoadData(configFolder+emailTemplates, configFolder+emailDomains)
 	if err != nil {
-		log.Println("warning: error loading email domains data")
-	}
-	err = email.LoadTemplates(configFolder + emailTemplates)
-	if err != nil {
-		log.Println("warning: error loading email templates data")
+		log.Println("warning: error loading email data")
 	}
 	srv := server.New(&db)
 	db.InsertData(configFolder, namesFile, surnamesFile)

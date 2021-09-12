@@ -6,6 +6,7 @@ import (
 
 	"github.com/batijo/random-person/app/age"
 	"github.com/batijo/random-person/app/models"
+	wr "github.com/mroth/weightedrand"
 )
 
 func Test_ParseWithTemplate(t *testing.T) {
@@ -18,6 +19,11 @@ func Test_ParseWithTemplate(t *testing.T) {
 			newTestPerson("Jonas", "Kazlauskas", 18, 18, 0),
 			"[fn].[fs]@gmail.com",
 			"Jonas.Kazlauskas@gmail.com",
+		},
+		{
+			newTestPerson("Jonas", "Kazlauskas", 18, 18, 0),
+			"[fn1].[fs2]@gmail.com",
+			"J.Ka@gmail.com",
 		},
 		{
 			newTestPerson("Jonas", "Kazlauskas", 18, 18, 0),
@@ -55,16 +61,22 @@ func Test_ParseWithTemplate(t *testing.T) {
 			"Jon.Kazlausk@gmail.com",
 		},
 		{
+			newTestPerson("Jonas", "Kazlauskas", 18, 18, 0),
+			"[nws2{}].[sws3{}]@gmail.com",
+			"Jo.Kaz@gmail.com",
+		},
+		{
 			newTestPerson("ąčęėįš", "žūųšįėęč", 18, 18, 0),
 			"[fn{ev/2}{e/3}].[fs{v/2}]@gmail.com",
 			"ąčęėįįššš.žūūųšįėęč@gmail.com",
 		},
 	}
+	mockDomainData()
 	for _, d := range tests {
 		ParseWithTemplate(d.template, &d.person)
 		if d.exp != d.person.Email {
 			t.Errorf(
-				"DATA: template %v EXPECTED: %v, GOT: %v",
+				"DATA: template: %v EXPECTED: %v, GOT: %v",
 				d.template,
 				d.exp,
 				d.person.Email,
@@ -121,4 +133,18 @@ func newTestPerson(nm, srnm string, agf, agl, gender int) models.Person {
 		BirthDate:   age.GetRandomBirthDateByAgeRangeAt(agf, agl, age.GetBirthDate(2021, 9, 3)),
 		Gender:      uint(gender),
 	}
+}
+
+func mockDomainData() {
+	var wd = []weightData{
+		{
+			"gmail.com",
+			10,
+		},
+		{
+			"yahoo.com",
+			8,
+		},
+	}
+	domains, _ = wr.NewChooser(getChoices(wd)...)
 }

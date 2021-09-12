@@ -2,16 +2,18 @@ package email
 
 import (
 	"fmt"
+	"math/rand"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/batijo/random-person/app/models"
 	"github.com/batijo/random-person/app/sp"
 	"github.com/batijo/random-person/utils"
 )
 
-func Random(p *models.Person) string {
-	return ""
+func Random(p *models.Person) {
+	ParseWithTemplate(getRandomTemplate(), p)
 }
 
 // [fn] - inserts full persons name
@@ -20,6 +22,8 @@ func Random(p *models.Person) string {
 // [sws] - inserts surname without suffix
 // [by] - inserts birth year
 // [pby] - inserts partial birth year (if year is 1985, inserts 85)
+// if you add a number N after any command it will take N character from the start of a result
+// e.g. Name is Jonas so [fn2] is Jo
 // [command{3/2}] - command can be any command , number 3 represents which element, 2 how many time multiply it
 // e.g. Surname is Kazlauskas so [sws{4/3}] is Kazlllausk
 // number 3 can be replaced with e for last letter
@@ -53,9 +57,10 @@ func ParseWithTemplate(template string, p *models.Person) {
 			p.Email += utils.ArrToString(chars[startOfCopy:i])
 			p.Email += utils.ArrToString(chars[i:])
 			break
-		} else if len(chars) == i+1 && !(chars[i+1] == "@" || chars[i+1] == "]") {
+		}
+		if len(chars) == i+1 {
 			p.Email += utils.ArrToString(chars[startOfCopy:])
-			// TODO: random email domain
+			p.Email += "@" + getRandomDomain()
 			break
 		}
 	}
@@ -104,21 +109,30 @@ func parseTemplateCommand(command string, p *models.Person) string {
 }
 
 func getByCommand(command string, p *models.Person) string {
-	switch command {
+	var str string
+	switch utils.FilterNumbers(command) {
 	case "fn":
-		return p.Name
+		str = p.Name
 	case "fs":
-		return p.Surname
+		str = p.Surname
 	case "nws":
-		return sp.RemoveSuffix(p.Name)
+		str = sp.RemoveSuffix(p.Name)
 	case "sws":
-		return sp.RemoveSuffix(p.Surname)
+		str = sp.RemoveSuffix(p.Surname)
 	case "by":
-		return fmt.Sprint(p.BirthDate.Year())
+		str = fmt.Sprint(p.BirthDate.Year())
 	case "pby":
-		return utils.Trim(fmt.Sprint(p.BirthDate.Year()), 2, false)
+		str = utils.Trim(fmt.Sprint(p.BirthDate.Year()), 2, false)
 	}
-	return "boi"
+	if sn := utils.FilterLetters(command); sn != "" {
+		n, err := strconv.Atoi(sn)
+		if err != nil {
+			return str
+		} else {
+			return utils.TrimUntil(str, n, true)
+		}
+	}
+	return str
 }
 
 // TODO: refactor
@@ -172,4 +186,14 @@ func parseTemplateSubCommands(subCommans []string, word string) map[int]int {
 		}
 	}
 	return charMap
+}
+
+func getRandomDomain() string {
+	rand.Seed(time.Now().UnixNano())
+	return domains.Pick().(string)
+}
+
+func getRandomTemplate() string {
+	rand.Seed(time.Now().UnixNano())
+	return templates.Pick().(string)
 }
