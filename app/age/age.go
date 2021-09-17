@@ -3,16 +3,22 @@ package age
 import (
 	"math/rand"
 	"time"
+
+	"github.com/batijo/random-person/app/models"
 )
 
-func GetBirthDate(year, month, day int) time.Time {
-	birthDate := time.Date(year, time.Month(month), day, 0, 0, 0, 0, time.UTC)
-	return birthDate
+// TODO: implement
+func Random(p *models.Person) {
+}
+
+func GetDate(year, month, day int) time.Time {
+	date := time.Date(year, time.Month(month), day, 0, 0, 0, 0, time.UTC)
+	return date
 }
 
 func GetRandomBirthDateByAgeRangeAt(fromAge, toAge int, now time.Time) time.Time {
 	if fromAge > toAge || fromAge < 0 || toAge < 0 {
-		return GetBirthDate(0, 0, 0)
+		return GetDate(0, 0, 0)
 	}
 	var (
 		year, month, day int
@@ -49,7 +55,7 @@ func GetRandomBirthDateByAgeRangeAt(fromAge, toAge int, now time.Time) time.Time
 	} else {
 		day = rand.Intn(monthDays[month]-1) + 1
 	}
-	return GetBirthDate(year, month, day)
+	return GetDate(year, month, day)
 }
 
 func GetRandomBirthDateByAge(age int) time.Time {

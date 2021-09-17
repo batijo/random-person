@@ -11,9 +11,9 @@ func Test_GetAgeAt(t *testing.T) {
 		now       time.Time
 		exp       int
 	}{
-		{GetBirthDate(2000, 4, 6), GetBirthDate(2010, 4, 6), 10},
-		{GetBirthDate(2001, 4, 6), GetBirthDate(2009, 4, 6), 8},
-		{GetBirthDate(2004, 4, 6), GetBirthDate(2005, 4, 4), 0},
+		{GetDate(2000, 4, 6), GetDate(2010, 4, 6), 10},
+		{GetDate(2001, 4, 6), GetDate(2009, 4, 6), 8},
+		{GetDate(2004, 4, 6), GetDate(2005, 4, 4), 0},
 	}
 	for _, d := range tests {
 		res := GetAgeAt(d.birthDate, d.now)
@@ -34,16 +34,16 @@ func Test_isLeapYear(t *testing.T) {
 		date time.Time
 		exp  bool
 	}{
-		{GetBirthDate(2000, 4, 5), true},
-		{GetBirthDate(2016, 4, 5), true},
-		{GetBirthDate(2020, 4, 5), true},
-		{GetBirthDate(2024, 4, 5), true},
-		{GetBirthDate(2028, 4, 5), true},
-		{GetBirthDate(2001, 4, 5), false},
-		{GetBirthDate(1900, 4, 5), false},
-		{GetBirthDate(2100, 4, 5), false},
-		{GetBirthDate(2200, 4, 5), false},
-		{GetBirthDate(1999, 4, 5), false},
+		{GetDate(2000, 4, 5), true},
+		{GetDate(2016, 4, 5), true},
+		{GetDate(2020, 4, 5), true},
+		{GetDate(2024, 4, 5), true},
+		{GetDate(2028, 4, 5), true},
+		{GetDate(2001, 4, 5), false},
+		{GetDate(1900, 4, 5), false},
+		{GetDate(2100, 4, 5), false},
+		{GetDate(2200, 4, 5), false},
+		{GetDate(1999, 4, 5), false},
 	}
 	for _, d := range tests {
 		res := isLeapYear(d.date.Year())

@@ -52,7 +52,7 @@ func TrimLastElem(s string) string {
 	return Trim(s, 1, true)
 }
 
-// Trim funcion trims characters from end or from begining.
+// Trim funcion trims characters from end or from beginning.
 // elemCount - how many characters to trim, if right equals to true it trims from end
 func Trim(s string, elemCount int, right bool) string {
 	if elemCount < 0 {

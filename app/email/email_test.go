@@ -130,7 +130,7 @@ func newTestPerson(nm, srnm string, agf, agl, gender int) models.Person {
 	return models.Person{
 		NameOnly:    &models.NameOnly{Name: nm},
 		SurnameOnly: &models.SurnameOnly{Surname: srnm},
-		BirthDate:   age.GetRandomBirthDateByAgeRangeAt(agf, agl, age.GetBirthDate(2021, 9, 3)),
+		BirthDate:   age.GetRandomBirthDateByAgeRangeAt(agf, agl, age.GetDate(2021, 9, 3)),
 		Gender:      uint(gender),
 	}
 }

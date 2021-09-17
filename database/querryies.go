@@ -1,6 +1,8 @@
 package database
 
-import "github.com/batijo/random-person/app/models"
+import (
+	"github.com/batijo/random-person/app/models"
+)
 
 // gender must be 0 - male or 1 - female else it will return random name
 func (db *Database) RandomName(gender int) models.Name {
@@ -20,13 +22,13 @@ func (db *Database) RandomSurname() models.Surname {
 func (db *Database) randomName(normativeStatus string, gender int) models.Name {
 	var name models.Name
 	if normativeStatus != "" {
-		if gender > 0 || gender < 2 {
+		if gender >= 0 && gender < 2 {
 			db.Limit(1).Order("RANDOM()").Where("gender = ?", gender).Where("normative_status = ?", normativeStatus).Find(&name)
 		} else {
 			db.Limit(1).Order("RANDOM()").Where("normative_status = ?", normativeStatus).Find(&name)
 		}
 	} else {
-		if gender > 0 || gender < 2 {
+		if gender >= 0 && gender < 2 {
 			db.Limit(1).Order("RANDOM()").Where("gender = ?", gender).Find(&name)
 		} else {
 			db.Limit(1).Order("RANDOM()").Find(&name)

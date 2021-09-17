@@ -5,6 +5,9 @@ import (
 	"os"
 	"time"
 
+	"github.com/batijo/random-person/app/age"
+	"github.com/batijo/random-person/app/email"
+	"github.com/batijo/random-person/app/models"
 	"github.com/batijo/random-person/database"
 	"github.com/batijo/random-person/utils"
 	"github.com/gofiber/fiber/v2"
@@ -47,16 +50,17 @@ func (h *Handlers) Person(c *fiber.Ctx) error {
 		rand.Seed(time.Now().UnixNano())
 		gender = rand.Intn(2)
 	}
-	name := h.DB.RandomNameNormativeStatus(os.Getenv("RP_DEF_NORMATIVE_STAT"), gender)
+	var person models.Person
+	person.NameOnly = &models.NameOnly{Name: h.DB.RandomNameNormativeStatus(os.Getenv("RP_DEF_NORMATIVE_STAT"), gender).Name}
 	q := new(surnConf)
 	if err := c.QueryParser(q); err != nil {
 		return err
 	}
-	surname := q.randomSurname(h.DB, gender)
-	return c.JSON(fiber.Map{
-		"name":    name.Name,
-		"surname": surname.Surname,
-	})
+	person.SurnameOnly = &models.SurnameOnly{Surname: q.randomSurname(h.DB, gender).Surname}
+	// age.Random(&person)
+	person.BirthDate = age.GetRandomBirthDateByAgeRangeAt(14, 24, age.GetDate(2021, 1, 1)) // TODO: remove this
+	email.Random(&person)
+	return c.JSON(person)
 }
 
 func (h *Handlers) Version(c *fiber.Ctx) error {
