@@ -7,8 +7,8 @@ import (
 	"github.com/batijo/random-person/app/models"
 )
 
-// TODO: implement
 func Random(p *models.Person) {
+	p.BirthDate = GetRandomBirthDateByAge(ages.Pick().(int))
 }
 
 func GetDate(year, month, day int) time.Time {

@@ -3,6 +3,8 @@ package age
 import (
 	"encoding/json"
 	"io/ioutil"
+	"math/rand"
+	"time"
 
 	wr "github.com/mroth/weightedrand"
 )
@@ -24,6 +26,8 @@ func LoadData(filepath string) error {
 	if err != nil {
 		return err
 	}
+	fillWeights(&wd)
+	rand.Seed(time.Now().UTC().UnixNano())
 	ages, err = wr.NewChooser(getChoices(wd)...)
 	if err != nil {
 		return err
@@ -32,18 +36,19 @@ func LoadData(filepath string) error {
 }
 
 func fillWeights(wd *[]weightData) {
-	var lastWeihgt = weightData{0, 0}
-	i := 1
+	var lastWeihgt = weightData{-1, 0}
 	for _, d := range *wd {
-		for j := i; lastWeihgt.Age != d.Age-1; j++ {
+		for j := lastWeihgt.Age + 1; lastWeihgt.Age != d.Age-1; j++ {
+			if d.Age < 0 {
+				continue
+			}
 			*wd = append(*wd, weightData{
 				Age:    j,
 				Weight: lastWeihgt.Weight,
 			})
 			lastWeihgt = weightData{j, lastWeihgt.Weight}
-			i = j + 1
 		}
-		lastWeihgt = weightData{i, d.Weight}
+		lastWeihgt = weightData{d.Age, d.Weight}
 	}
 }
 

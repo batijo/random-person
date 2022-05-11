@@ -57,8 +57,7 @@ func (h *Handlers) Person(c *fiber.Ctx) error {
 		return err
 	}
 	person.SurnameOnly = &models.SurnameOnly{Surname: q.randomSurname(h.DB, gender).Surname}
-	// age.Random(&person)
-	person.BirthDate = age.GetRandomBirthDateByAgeRangeAt(14, 24, age.GetDate(2021, 1, 1)) // TODO: remove this
+	age.Random(&person)
 	email.Random(&person)
 	return c.JSON(person)
 }

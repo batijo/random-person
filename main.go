@@ -4,6 +4,7 @@ import (
 	"log"
 	"os"
 
+	"github.com/batijo/random-person/app/age"
 	"github.com/batijo/random-person/app/email"
 	"github.com/batijo/random-person/database"
 	"github.com/batijo/random-person/server"
@@ -16,6 +17,7 @@ const (
 	configEnv      = ".env"
 	emailDomains   = "email_domains.json"
 	emailTemplates = "email_templates.json"
+	ageWeights     = "age_weights.json"
 )
 
 func main() {
@@ -32,6 +34,10 @@ func main() {
 	err = email.LoadData(configFolder+emailTemplates, configFolder+emailDomains)
 	if err != nil {
 		log.Println("warning: error loading email data")
+	}
+	err = age.LoadData(configFolder + ageWeights)
+	if err != nil {
+		log.Println("warning: error loading age data")
 	}
 	srv := server.New(&db)
 	db.InsertData(configFolder, namesFile, surnamesFile)
