@@ -1,6 +1,9 @@
 package utils
 
-import "testing"
+import (
+	"fmt"
+	"testing"
+)
 
 func Test_IsCharInString(t *testing.T) {
 	tests := []struct {
@@ -120,6 +123,7 @@ func Test_FilterChars(t *testing.T) {
 		{"av564sdčęa", "av", "564sdčę"},
 		{"av564sdčęa", "0123456789", "avsdčęa"},
 		{"avsdčęa", "0123456789", "avsdčęa"},
+		{"avsdčęa", "aas", "vdčę"},
 	}
 	for _, d := range tests {
 		res := FilterChars(d.val, d.chars)
@@ -132,5 +136,40 @@ func Test_FilterChars(t *testing.T) {
 				res,
 			)
 		}
+	}
+}
+
+func Benchmark_IsCharInString(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		IsCharInString("a", "fghha")
+	}
+}
+
+func Benchmark_Trim(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		Trim("asddqfgq", 5, true)
+	}
+}
+
+func Benchmark_StrElem(b *testing.B) {
+	var position = []struct {
+		input int
+	}{
+		{input: 5},
+		{input: 10},
+		{input: -1},
+	}
+	for _, v := range position {
+		b.Run(fmt.Sprintf("input_size_%d", v.input), func(b *testing.B) {
+			for i := 0; i < b.N; i++ {
+				StrElem("asddqfgq", v.input)
+			}
+		})
+	}
+}
+
+func Benchmark_FilterChars(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		FilterChars("asddaqfgaq", "as")
 	}
 }

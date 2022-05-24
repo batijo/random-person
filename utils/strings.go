@@ -12,6 +12,7 @@ func IsVowel(s string) bool {
 
 // IsCharInString receives single character and a string of characters
 // and checks if those characters contains this element
+// regardless of whether the letters are uppercase or lowercase
 func IsCharInString(s, elements string) bool {
 	s = strings.ToLower(s)
 	elements = strings.ToLower(elements)
@@ -41,10 +42,14 @@ func StrElemEnd(s string, position int) string {
 // StrElem returns one character of string at give position.
 // It returns empty string if element you want to access is out of range
 func StrElem(s string, position int) string {
-	if utf8.RuneCountInString(s) <= position || position < 0 {
+	if position < 0 {
 		return ""
 	}
-	return string([]rune(s)[position])
+	r := []rune(s)
+	if position >= len(r) {
+		return ""
+	}
+	return string(r[position])
 }
 
 // TrimLastElem trims last character from end of a string
@@ -84,14 +89,10 @@ func TrimUntil(s string, n int, right bool) string {
 
 // FilterChars removes all characters from string which are in chars string
 func FilterChars(s, chars string) string {
-	arr := strings.Split(s, "")
-	newString := ""
-	for _, c := range arr {
-		if !IsCharInString(c, chars) {
-			newString += c
-		}
+	for _, c := range chars {
+		s = strings.Replace(s, string(c), "", -1)
 	}
-	return newString
+	return s
 }
 
 // FilterNumbers removes all numbers from string

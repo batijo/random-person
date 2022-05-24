@@ -32,3 +32,9 @@ func Test_StringContainsInt(t *testing.T) {
 		}
 	}
 }
+
+func Benchmark_StringContainsInt(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		StringContainsInt("1 2 3 4", 2)
+	}
+}
