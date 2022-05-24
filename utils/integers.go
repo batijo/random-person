@@ -5,7 +5,7 @@ import (
 	"strings"
 )
 
-// StringContainsInt checks if string contains integer.
+// StringContainsInt checks if string contains integer i.
 // Elements needs to be separated with space
 func StringContainsInt(s string, i int) bool {
 	s = strings.ReplaceAll(s, "\t", " ")

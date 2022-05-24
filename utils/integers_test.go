@@ -17,6 +17,7 @@ func Test_StringContainsInt(t *testing.T) {
 		{"a	2	b c", 2, true},
 		{"a 12 b c", 12, true},
 		{"a 2bc", 2, false},
+		{"a 1 bc", 2, false},
 	}
 	for _, d := range tests {
 		res := StringContainsInt(d.val, d.i)
