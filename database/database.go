@@ -20,11 +20,11 @@ type Database struct {
 }
 
 type Config struct {
-	Host    string
-	Name    string
-	User    string
-	Pasword string
-	Port    string
+	Host     string
+	Name     string
+	User     string
+	Password string
+	Port     string
 }
 
 func Connect(conf Config) (Database, error) {
@@ -38,7 +38,7 @@ func Connect(conf Config) (Database, error) {
 		conf.Port,
 		conf.User,
 		conf.Name,
-		conf.Pasword,
+		conf.Password,
 	)
 	/* Attempting to connect to database several times
 	   because it needs couple of seconds to set up when using docker-compose

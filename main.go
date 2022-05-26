@@ -22,11 +22,11 @@ const (
 
 func main() {
 	db, err := database.Connect(database.Config{
-		Host:    os.Getenv("RP_DB_HOST"),
-		Name:    os.Getenv("RP_DB_NAME"),
-		User:    os.Getenv("RP_DB_USER"),
-		Pasword: os.Getenv("RP_DB_PASSWORD"),
-		Port:    os.Getenv("RP_DB_PORT"),
+		Host:     os.Getenv("RP_DB_HOST"),
+		Name:     os.Getenv("RP_DB_NAME"),
+		User:     os.Getenv("RP_DB_USER"),
+		Password: os.Getenv("RP_DB_PASSWORD"),
+		Port:     os.Getenv("RP_DB_PORT"),
 	})
 	if err != nil {
 		log.Panic(err)
