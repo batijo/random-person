@@ -22,7 +22,7 @@ func Random(p *models.Person) {
 // [sws] - inserts surname without suffix
 // [by] - inserts birth year
 // [pby] - inserts partial birth year (if year is 1985, inserts 85)
-// if you add a number N after any command it will take N character from the start of a result
+// if you add a number N after any command it will take N number of characters from the start of a result
 // e.g. Name is Jonas so [fn2] is Jo
 // [command{3/2}] - command can be any command , number 3 represents which element, 2 how many time multiply it
 // e.g. Surname is Kazlauskas so [sws{4/3}] is Kazlllausk

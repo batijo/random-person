@@ -53,7 +53,7 @@ func New(db *database.Database) *Obj {
 	}
 	srv.Server().MaxConnsPerIP = maxConnsPerIP
 	srv.Static("/", "./public")
-	srv.registerMidleware()
+	srv.registerMiddleware()
 	srv.registerWebRoutes()
 	api := srv.Group("/api")
 	api.Get("", func(c *fiber.Ctx) error {
@@ -68,14 +68,14 @@ func New(db *database.Database) *Obj {
 	return &srv
 }
 
-func (srv *Obj) registerMidleware() {
-	// Panic recover midleware
+func (srv *Obj) registerMiddleware() {
+	// Panic recover middleware
 	srv.Use(recover.New())
 	// Cache favicon to prevent frequent disk access
 	srv.Use(favicon.New(favicon.Config{
 		File: "./public/favicon.ico",
 	}))
-	// Midleware to limit multiple requests
+	// Middleware to limit multiple requests
 	maxRequests, err := strconv.Atoi(os.Getenv("RP_MAX_REQUESTS"))
 	if err != nil {
 		log.Panic(err)
@@ -91,7 +91,7 @@ func (srv *Obj) registerMidleware() {
 }
 
 func (srv *Obj) statusNotFoundMiddleware() {
-	// Status Not Found midleware
+	// Status Not Found middleware
 	srv.Use(func(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusNotFound).JSON(
 			map[string]interface{}{"message": "page not found"},

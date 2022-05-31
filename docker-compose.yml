@@ -9,7 +9,9 @@ networks:
 services:
   app:
     container_name: ${APP_CONTAINER_NAME}
-    image: batijo/random-person:${RP_VERSION}
+    build:
+      context: .
+      dockerfile: Dockerfile
     restart: unless-stopped
     environment:
       - RP_DB_HOST=database
@@ -33,7 +35,7 @@ services:
 
   database:
     container_name: ${DATABASE_CONTAINER_NAME}
-    image: postgres:alpine
+    image: postgres:14.3-alpine3.16
     restart: unless-stopped
     environment:
       - POSTGRES_DB=${DB_NAME}
@@ -41,11 +43,3 @@ services:
       - POSTGRES_PASSWORD=${DB_PASSWORD}
     networks:
       - internal
-
-  watchtower:
-    container_name: watchtower
-    image: containrrr/watchtower
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-      - $HOME/.docker/config.json:/config.json
-    command: --interval 30
