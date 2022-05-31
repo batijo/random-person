@@ -17,15 +17,10 @@ docker network create web
 
 - Configure `.env.example` files in `./` and `/config` directories and remove `.example` when done
 - To upload data to database you need to add json files `names.json` and `surnames.json` to `/config` directory on first start. You should remove those files later for better start up performance.
-- `docker-compose` will not create config file for [watchtower](https://github.com/containrrr/watchtower) if it does not exist so you should create `config.json` file in `$HOME/.docker/` yourself.
-
-  ```sh
-  echo {} > $HOME/.docker/config.json
-  ```
 
 `names.json` example:
 
-```json names.json example
+```json
 [
     {
         "name": "Jonas",
@@ -34,7 +29,7 @@ docker network create web
         "origin": "svetimos kilmės, hebrajiškas asmenvardis. svetimos kilmės, trumpinys",
         "note": "šventojo vardas"
     },
-        {
+    {
         "name": "Jadvyga",
         "gender": 1,
         "normative_status": "teiktinas",
@@ -57,6 +52,106 @@ docker network create web
 ]
 ```
 
+- To create age weights we need to add json file `age_weights.json` to `/config` directory. If you will leave gaps between ages program will fill them with values from the last weight.
+
+`age_weights.json` example:
+
+```json
+[
+    {
+        "age": "1",
+        "weight": "1"
+    },
+    {
+        "age": "3",
+        "weight": "2"
+    },
+]
+```
+
+program will convert this to:
+
+```json
+[
+    {
+        "age": "0",
+        "weight": "0"
+    },
+    {
+        "age": "1",
+        "weight": "1"
+    },
+    {
+        "age": "2",
+        "weight": "1"
+    },
+    {
+        "age": "3",
+        "weight": "2"
+    },
+]
+```
+
+- To create email domain weights we need to add json file `email_domains.json` to `/config` directory.
+
+`email_domains.json` example:
+
+```json
+[
+    {
+        "data": "gmail.com",
+        "weight": 1
+    },
+    {
+        "data": "yahoo.com",
+        "weight": 2
+    },
+]
+```
+
+- To create email template weights we need to add json file `email_templates.json` to `/config` directory.
+
+`email_templates.json` example:
+
+```json
+[
+    {
+        "data": "[fn]",
+        "weight": 1
+    },
+    {
+        "data": "[fs]",
+        "weight": 2
+    },
+]
+```
+
+email template creation docs:
+
+```md
+[fn] - inserts full persons name
+[fs] - inserts full persons surname
+[nws] - inserts name without suffix
+[sws] - inserts surname without suffix
+[by] - inserts birth year
+[pby] - inserts partial birth year (if year is 1985, inserts 85)
+if you add a number N after any command it will take N number of characters from the start of a result
+e.g. Name is Jonas so [fn2] is Jo
+[command{3/2}] - command can be any command , number 3 represents which element, 2 how many time multiply it
+e.g. Surname is Kazlauskas so [sws{4/3}] is Kazlllausk
+number 3 can be replaced with e for last letter
+e.g. Surname is Kazlauskas so [fs{e/3}] is Kazlauskasss
+if you add number x after e it will multiply x letter from end
+e.g. Surname is Kazlauskas so [sws{e3/4}] is Kazlauuuusk
+if you add v (vowel) then [command{v/2}] multiplies first vowel 2 times
+e.g. Surname is Kazlauskas so [sws{v/3}] is Kaaazlausk
+You can also add e before v
+e.g. Surname is Kazlauskas so [fs{ev/4}] is Kaazlauskaaaas
+everything what goes after @ symbol is added without checking
+if you don't add @ a random popular domain will be added
+e.g. @gmail.com @yahoo.com @outlook.com ...
+```
+
 ### Run app
 
 ```sh
@@ -77,4 +172,6 @@ docker-compose up -d --build
 - 1 - married.
 - 2 - without marital status.
 
-`rand.lt/api/v0/person` is a combination of both. You can provide gender and marital status as well.
+`rand.lt/api/v0/person` is a combination of both. You can provide gender and marital status as well. Also it will include weighted random birth date and email.
+
+`rand.lt/api/v0/version` will return version of the api.
