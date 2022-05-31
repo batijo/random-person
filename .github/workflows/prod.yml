@@ -25,4 +25,3 @@ jobs:
             git pull
             echo "${{secrets.DOT_ENV}}" > .env
             docker-compose up -d --build
-            
