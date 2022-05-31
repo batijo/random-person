@@ -11,20 +11,17 @@ jobs:
     name: Build and deploy backend
     runs-on: ubuntu-latest
     steps:
-      -
-      name: Checkout code
-      uses: actions/checkout@v2
-      - 
-      name: Executing remote command
-      uses: appleboy/ssh-action@master
-      with:
-        host: ${{ secrets.HOST }}
-        username: ${{ secrets.USERNAME }}
-        port: ${{ secrets.PORT }}
-        key: ${{ secrets.SSHKEY }}
-        script: |
-          cd random-person/
-          git pull
-          echo "${{secrets.DOT_ENV}}" > .env
-          docker-compose up -d --build
-          
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Executing remote command
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          port: ${{ secrets.PORT }}
+          key: ${{ secrets.SSHKEY }}
+          script: |
+            cd random-person/
+            git pull
+            echo "${{secrets.DOT_ENV}}" > .env
+            docker-compose up -d --build
