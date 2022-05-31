@@ -18,19 +18,22 @@ type Handlers struct {
 }
 
 func (h *Handlers) Api(c *fiber.Ctx) error {
-	c.JSON(fiber.Map{
+	err := c.JSON(fiber.Map{
 		"app":     "github.com/batijo/random-person",
 		"api":     "https://github.com/batijo/random-person/tree/release#api-usage",
 		"version": os.Getenv("RP_VERSION"),
 	})
-	return nil
+	c.Set("content-type", "application/json; charset=utf-8")
+	return err
 }
 
 func (h *Handlers) Name(c *fiber.Ctx) error {
 	name := h.DB.RandomNameNormativeStatus(os.Getenv("RP_DEF_NORMATIVE_STAT"), getGender(c.Params("gender")))
-	return c.JSON(fiber.Map{
+	err := c.JSON(fiber.Map{
 		"name": name.Name,
 	})
+	c.Set("content-type", "application/json; charset=utf-8")
+	return err
 }
 
 func (h *Handlers) Surname(c *fiber.Ctx) error {
@@ -39,9 +42,11 @@ func (h *Handlers) Surname(c *fiber.Ctx) error {
 		return err
 	}
 	surname := q.randomSurname(h.DB, getGender(c.Params("gender")))
-	return c.JSON(fiber.Map{
+	err := c.JSON(fiber.Map{
 		"surname": surname.Surname,
 	})
+	c.Set("content-type", "application/json; charset=utf-8")
+	return err
 }
 
 func (h *Handlers) Person(c *fiber.Ctx) error {
@@ -59,11 +64,15 @@ func (h *Handlers) Person(c *fiber.Ctx) error {
 	person.SurnameOnly = &models.SurnameOnly{Surname: q.randomSurname(h.DB, gender).Surname}
 	age.Random(&person)
 	email.Random(&person)
-	return c.JSON(person)
+	err := c.JSON(person)
+	c.Set("content-type", "application/json; charset=utf-8")
+	return err
 }
 
 func (h *Handlers) Version(c *fiber.Ctx) error {
-	return c.JSON(os.Getenv("RP_VERSION"))
+	err := c.JSON(os.Getenv("RP_VERSION"))
+	c.Set("content-type", "application/json; charset=utf-8")
+	return err
 }
 
 func New(db *database.Database) *Handlers {
