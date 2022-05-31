@@ -14,6 +14,7 @@ import (
 
 func Random(p *models.Person) {
 	ParseWithTemplate(getRandomTemplate(), p)
+	p.Email = strings.ToLower(p.Email)
 	p.StringifyBirthDate()
 }
 
@@ -60,8 +61,8 @@ func ParseWithTemplate(template string, p *models.Person) {
 			break
 		}
 		if len(chars) == i+1 {
-			p.Email += strings.ToLower(utils.ArrToString(chars[startOfCopy:]))
-			p.Email += "@" + strings.ToLower(getRandomDomain())
+			p.Email += utils.ArrToString(chars[startOfCopy:])
+			p.Email += "@" + getRandomDomain()
 			break
 		}
 	}
