@@ -9,6 +9,7 @@ import (
 	"github.com/batijo/random-person/app/handlers"
 	"github.com/batijo/random-person/database"
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/favicon"
 	"github.com/gofiber/fiber/v2/middleware/limiter"
 	"github.com/gofiber/fiber/v2/middleware/recover"
 )
@@ -24,6 +25,7 @@ func (srv *Obj) registerApiRoutes(r fiber.Router) {
 	r.Get("/name/:gender?", h.Name)
 	r.Get("/surname/:gender?", h.Surname)
 	r.Get("/person/:gender?", h.Person)
+	r.Get("/version", h.Version)
 }
 
 func (srv *Obj) registerWebRoutes() {
@@ -50,7 +52,8 @@ func New(db *database.Database) *Obj {
 		log.Fatal("error: ", err)
 	}
 	srv.Server().MaxConnsPerIP = maxConnsPerIP
-	srv.registerMidleware()
+	srv.Static("/", "./public")
+	srv.registerMiddleware()
 	srv.registerWebRoutes()
 	api := srv.Group("/api")
 	api.Get("", func(c *fiber.Ctx) error {
@@ -65,9 +68,14 @@ func New(db *database.Database) *Obj {
 	return &srv
 }
 
-func (srv *Obj) registerMidleware() {
+func (srv *Obj) registerMiddleware() {
+	// Panic recover middleware
 	srv.Use(recover.New())
-	// Midleware to limit multiple requests
+	// Cache favicon to prevent frequent disk access
+	srv.Use(favicon.New(favicon.Config{
+		File: "./public/favicon.ico",
+	}))
+	// Middleware to limit multiple requests
 	maxRequests, err := strconv.Atoi(os.Getenv("RP_MAX_REQUESTS"))
 	if err != nil {
 		log.Panic(err)
@@ -83,7 +91,7 @@ func (srv *Obj) registerMidleware() {
 }
 
 func (srv *Obj) statusNotFoundMiddleware() {
-	// Status Not Found midleware
+	// Status Not Found middleware
 	srv.Use(func(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusNotFound).JSON(
 			map[string]interface{}{"message": "page not found"},

@@ -5,6 +5,9 @@ import (
 	"os"
 	"time"
 
+	"github.com/batijo/random-person/app/age"
+	"github.com/batijo/random-person/app/email"
+	"github.com/batijo/random-person/app/models"
 	"github.com/batijo/random-person/database"
 	"github.com/batijo/random-person/utils"
 	"github.com/gofiber/fiber/v2"
@@ -16,15 +19,15 @@ type Handlers struct {
 
 func (h *Handlers) Api(c *fiber.Ctx) error {
 	c.JSON(fiber.Map{
-		"message": "github.com/batijo/random-person",
+		"app":     "github.com/batijo/random-person",
+		"api":     "https://github.com/batijo/random-person/tree/release#api-usage",
 		"version": os.Getenv("RP_VERSION"),
 	})
 	return nil
 }
 
 func (h *Handlers) Name(c *fiber.Ctx) error {
-	p := c.Params("gender")
-	name := h.DB.RandomName(getGender(p))
+	name := h.DB.RandomNameNormativeStatus(os.Getenv("RP_DEF_NORMATIVE_STAT"), getGender(c.Params("gender")))
 	return c.JSON(fiber.Map{
 		"name": name.Name,
 	})
@@ -35,30 +38,32 @@ func (h *Handlers) Surname(c *fiber.Ctx) error {
 	if err := c.QueryParser(q); err != nil {
 		return err
 	}
-	p := c.Params("gender")
-	surname := q.randomSurname(h.DB, getGender(p))
+	surname := q.randomSurname(h.DB, getGender(c.Params("gender")))
 	return c.JSON(fiber.Map{
 		"surname": surname.Surname,
 	})
 }
 
 func (h *Handlers) Person(c *fiber.Ctx) error {
-	p := c.Params("gender")
-	gender := getGender(p)
+	gender := getGender(c.Params("gender"))
 	if !utils.StringContainsInt("0 1", gender) {
 		rand.Seed(time.Now().UnixNano())
 		gender = rand.Intn(2)
 	}
-	name := h.DB.RandomName(gender)
+	var person models.Person
+	person.NameOnly = &models.NameOnly{Name: h.DB.RandomNameNormativeStatus(os.Getenv("RP_DEF_NORMATIVE_STAT"), gender).Name}
 	q := new(surnConf)
 	if err := c.QueryParser(q); err != nil {
 		return err
 	}
-	surname := q.randomSurname(h.DB, gender)
-	return c.JSON(fiber.Map{
-		"name":    name.Name,
-		"surname": surname.Surname,
-	})
+	person.SurnameOnly = &models.SurnameOnly{Surname: q.randomSurname(h.DB, gender).Surname}
+	age.Random(&person)
+	email.Random(&person)
+	return c.JSON(person)
+}
+
+func (h *Handlers) Version(c *fiber.Ctx) error {
+	return c.JSON(os.Getenv("RP_VERSION"))
 }
 
 func New(db *database.Database) *Handlers {

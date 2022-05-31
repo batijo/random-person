@@ -14,22 +14,17 @@ jobs:
       -
         name: Checkout code
         uses: actions/checkout@v2
-      -
-        name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v1
-      -
-        name: Login to DockerHub
-        uses: docker/login-action@v1 
-        with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_TOKEN }}
-      -
-        name: Build and push
-        id: docker_build
-        uses: docker/build-push-action@v2
-        with:
-          push: true
-          tags: batijo/random-person:v0.1.1
-      -
-        name: Image digest
-        run: echo ${{ steps.docker_build.outputs.digest }}
+      - 
+      name: Executing remote command
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.HOST }}
+        username: ${{ secrets.USERNAME }}
+        port: ${{ secrets.PORT }}
+        key: ${{ secrets.SSHKEY }}
+        script: |
+          cd random-person/
+          git pull
+          echo "${{secrets.DOT_ENV}}" > .env
+          docker-compose up -d --build
+          

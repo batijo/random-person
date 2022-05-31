@@ -1,2 +1,5 @@
 names.json
 surnames.json
+email_templates.json
+email_domains.json
+age_weights.json

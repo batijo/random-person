@@ -5,17 +5,12 @@ import (
 	"strings"
 )
 
-// StringContainsInt checks if string contains integer.
+// StringContainsInt checks if string contains integer i.
 // Elements needs to be separated with space
 func StringContainsInt(s string, i int) bool {
-	arr := strings.Split(s, " ")
-	for _, a := range arr {
-		if num, err := strconv.Atoi(strings.TrimSpace(a)); err == nil {
-			if num == i {
-				return true
-			}
-		} else {
-			continue
+	for _, v := range strings.Fields(s) {
+		if v == strconv.Itoa(i) {
+			return true
 		}
 	}
 	return false

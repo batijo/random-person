@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"github.com/batijo/random-person/app/models"
-	"github.com/batijo/random-person/app/ssp"
+	"github.com/batijo/random-person/app/sp"
 	"github.com/batijo/random-person/database"
 	"github.com/batijo/random-person/utils"
 )
@@ -20,17 +20,17 @@ func (s *surnConf) randomSurname(db *database.Database, gender int) models.Surna
 	if gender == 1 {
 		maritalStatus, err := strconv.Atoi(s.MaritalStatus)
 		if err == nil && utils.StringContainsInt("0 1 2", maritalStatus) {
-			surname.Surname = ssp.Feminize(surname.Surname, uint(maritalStatus))
+			surname.Surname = sp.FeminizeMaleSurname(surname.Surname, uint8(maritalStatus))
 		} else {
 			rand.Seed(time.Now().UnixNano())
 			maritalStatus = rand.Intn(3)
-			surname.Surname = ssp.Feminize(surname.Surname, uint(maritalStatus))
+			surname.Surname = sp.FeminizeMaleSurname(surname.Surname, uint8(maritalStatus))
 		}
 	} else if gender != 0 {
 		rand.Seed(time.Now().UnixNano())
 		gender := rand.Intn(2)
 		if gender != 0 {
-			surname.Surname = ssp.Feminize(surname.Surname, uint(rand.Intn(3)))
+			surname.Surname = sp.FeminizeMaleSurname(surname.Surname, uint8(rand.Intn(3)))
 		}
 	}
 	return surname

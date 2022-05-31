@@ -1,8 +1,11 @@
 package utils
 
-import "testing"
+import (
+	"fmt"
+	"testing"
+)
 
-func Test_IsCharInElements(t *testing.T) {
+func Test_IsCharInString(t *testing.T) {
 	tests := []struct {
 		val      string
 		elements string
@@ -21,7 +24,7 @@ func Test_IsCharInElements(t *testing.T) {
 		{"as", "asb", false},
 	}
 	for _, d := range tests {
-		res := IsCharInElements(d.val, d.elements)
+		res := IsCharInString(d.val, d.elements)
 		if res != d.exp {
 			t.Errorf(
 				"DATA: val: %v elements: %v EXPECTED: %v, GOT: %v",
@@ -106,5 +109,67 @@ func Test_StrElem(t *testing.T) {
 				res,
 			)
 		}
+	}
+}
+
+func Test_FilterChars(t *testing.T) {
+	tests := []struct {
+		val   string
+		chars string
+		exp   string
+	}{
+		{"asdąčęfdąąrągėg", "čąd", "asęfrgėg"},
+		{"av564sdčę", "5č", "av64sdę"},
+		{"av564sdčęa", "av", "564sdčę"},
+		{"av564sdčęa", "0123456789", "avsdčęa"},
+		{"avsdčęa", "0123456789", "avsdčęa"},
+		{"avsdčęa", "aas", "vdčę"},
+	}
+	for _, d := range tests {
+		res := FilterChars(d.val, d.chars)
+		if res != d.exp {
+			t.Errorf(
+				"DATA: val: %v chars: %v EXPECTED: %v, GOT: %v",
+				d.val,
+				d.chars,
+				d.exp,
+				res,
+			)
+		}
+	}
+}
+
+func Benchmark_IsCharInString(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		IsCharInString("a", "fghha")
+	}
+}
+
+func Benchmark_Trim(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		Trim("asddqfgq", 5, true)
+	}
+}
+
+func Benchmark_StrElem(b *testing.B) {
+	var position = []struct {
+		input int
+	}{
+		{input: 5},
+		{input: 10},
+		{input: -1},
+	}
+	for _, v := range position {
+		b.Run(fmt.Sprintf("input_size_%d", v.input), func(b *testing.B) {
+			for i := 0; i < b.N; i++ {
+				StrElem("asddqfgq", v.input)
+			}
+		})
+	}
+}
+
+func Benchmark_FilterChars(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		FilterChars("asddaqfgaq", "as")
 	}
 }
