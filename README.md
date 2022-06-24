@@ -1,6 +1,6 @@
 # random-person
 
-A [api](https://rand.lt/api/v0/person) to generate random Lithuanian person.
+An [api](https://rand.lt/api/v0/person) to generate random Lithuanian person.
 
 ## Setup
 
